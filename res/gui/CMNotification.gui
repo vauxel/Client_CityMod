@@ -1,0 +1,230 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(CMNotificationGui) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = "640 480";
+   minExtent = "8 2";
+   enabled = "1";
+   visible = "1";
+   clipToParent = "1";
+
+   new GuiWindowCtrl(CMNotificationGui_notificationDialog) {
+      profile = "CMWindowProfile";
+      horizSizing = "right";
+      vertSizing = "bottom";
+      position = "185 241";
+      extent = "300 107";
+      minExtent = "8 2";
+      enabled = "1";
+      visible = "1";
+      clipToParent = "1";
+      text = "Heads Up!";
+      maxLength = "255";
+      resizeWidth = "0";
+      resizeHeight = "0";
+      canMove = "1";
+      canClose = "1";
+      canMinimize = "0";
+      canMaximize = "0";
+      minSize = "50 50";
+      closeCommand = "closeCMGui(\"Notification\");";
+
+      new GuiMLTextCtrl(CMNotificationGui_messageText) {
+         profile = "CMTextMediumBoldProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "25 34";
+         extent = "250 28";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+         lineSpacing = "2";
+         allowColorChars = "0";
+         maxChars = "-1";
+         text = "<just:center>Some important and alerting message goes here!";
+         maxBitmapHeight = "-1";
+         selectable = "1";
+         autoResize = "1";
+      };
+      new GuiSwatchCtrl(CMNotificationGui_okPane) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "25 67";
+         extent = "250 32";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+         color = "0 78 96 2";
+
+         new GuiBitmapButtonCtrl(CMNotificationGui_okButton) {
+            profile = "CMButtonColoredProfile";
+            horizSizing = "center";
+            vertSizing = "bottom";
+            position = "21 0";
+            extent = "208 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            text = "OK";
+            groupNum = "-1";
+            buttonType = "PushButton";
+            bitmap = "~/Client_CityMod/res/ui/button_wide/button";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            mKeepCached = "0";
+            mColor = "51 153 255 255";
+         };
+      };
+      new GuiSwatchCtrl(CMNotificationGui_yesnoPane) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "25 67";
+         extent = "250 32";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "0";
+         clipToParent = "1";
+         color = "0 78 96 2";
+
+         new GuiBitmapButtonCtrl(CMNotificationGui_noButton) {
+            profile = "CMButtonColoredProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "128 0";
+            extent = "110 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            text = "No";
+            groupNum = "-1";
+            buttonType = "PushButton";
+            bitmap = "~/Client_CityMod/res/ui/button_regular/button";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            mKeepCached = "0";
+            mColor = "255 102 102 255";
+         };
+         new GuiBitmapButtonCtrl(CMNotificationGui_yesButton) {
+            profile = "CMButtonColoredProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "12 0";
+            extent = "110 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            text = "Yes";
+            groupNum = "-1";
+            buttonType = "PushButton";
+            bitmap = "~/Client_CityMod/res/ui/button_regular/button";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            mKeepCached = "0";
+            mColor = "60 179 113 255";
+         };
+      };
+      new GuiSwatchCtrl(CMNotificationGui_inputPane) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "25 67";
+         extent = "250 32";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "0";
+         clipToParent = "1";
+         color = "0 78 96 2";
+
+         new GuiBitmapButtonCtrl(CMNotificationGui_enterButton) {
+            profile = "CMButtonColoredProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "178 0";
+            extent = "72 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            text = "Done";
+            groupNum = "-1";
+            buttonType = "PushButton";
+            bitmap = "~/Client_CityMod/res/ui/button_small/button";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            mKeepCached = "0";
+            mColor = "51 153 255 255";
+         };
+         new GuiBitmapBorderCtrl() {
+            profile = "CMBorderOneProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "0 0";
+            extent = "175 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+
+            new GuiSwatchCtrl() {
+               profile = "GuiDefaultProfile";
+               horizSizing = "right";
+               vertSizing = "bottom";
+               position = "0 0";
+               extent = "175 32";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               color = "255 255 255 255";
+            };
+            new GuiTextEditCtrl(CMNotificationGui_inputBox) {
+               profile = "CMTextEditProfile";
+               horizSizing = "right";
+               vertSizing = "center";
+               position = "4 7";
+               extent = "167 17";
+               minExtent = "8 2";
+               enabled = "1";
+               visible = "1";
+               clipToParent = "1";
+               command = "$CMNotificationInput = CMNotificationGui_inputBox.getValue();";
+               maxLength = "255";
+               historySize = "0";
+               password = "0";
+               tabComplete = "0";
+               sinkAllKeyEvents = "0";
+            };
+         };
+      };
+      new GuiSwatchCtrl(CMNotificationGui_choicePane) {
+         profile = "GuiDefaultProfile";
+         horizSizing = "center";
+         vertSizing = "bottom";
+         position = "25 67";
+         extent = "250 32";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "0";
+         clipToParent = "1";
+         color = "0 78 96 2";
+      };
+   };
+};
+//--- OBJECT WRITE END ---

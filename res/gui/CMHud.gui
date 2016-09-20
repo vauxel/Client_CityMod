@@ -1,0 +1,14 @@
+//--- OBJECT WRITE BEGIN ---
+new GuiControl(CMHud) {
+   profile = "GuiDefaultProfile";
+   horizSizing = "right";
+   vertSizing = "bottom";
+   position = "0 0";
+   extent = getRes();
+   minExtent = "8 2";
+   enabled = "1";
+   visible = "1";
+   clipToParent = "1";
+      noCursor = "1";
+};
+//--- OBJECT WRITE END ---

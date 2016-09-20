@@ -1,0 +1,3 @@
+Title: CityMod Client
+Author: Vaux
+The client companion to CityMod
