@@ -13,8 +13,9 @@
 //     1.7: Border Profiles
 //     1.8: Misc Profiles
 //   2: Test Profiles
-//   3: Core Code
-//   4: Modules Initialization
+//   3: Sound Datablocks
+//   4: Core Code
+//   5: Modules Initialization
 // ============================================================
 
 $CMClient::Version = 1;
@@ -245,7 +246,17 @@ new GuiControlProfile(CMProgressSliderProfile : GuiProgressProfile)
 // ============================================================
 
 // ============================================================
-// Section 3 - Core Code
+// Section 3 - Sound Datablocks
+// ============================================================
+new AudioProfile(CMClient_NotificationSound) {
+	fileName = "./res/sounds/notification.wav";
+	description = "AudioGui";
+	preload = "1";
+	volume = 0.5;
+};
+
+// ============================================================
+// Section 4 - Core Code
 // ============================================================
 
 function clientcmdCM_errorMessage(%id, %message) {
@@ -339,7 +350,7 @@ if(isPackage(CityModClient_Core))
 activatePackage(CityModClient_Core);
 
 // ============================================================
-// Section 4 - Modules Initialization
+// Section 5 - Modules Initialization
 // ============================================================
 
 if(!isObject(CMClient_Cleanup)) {

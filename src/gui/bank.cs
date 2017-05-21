@@ -33,6 +33,8 @@ function clientcmdCM_Bank_loginSuccessful(%account, %pin, %blid, %name) {
 	CMBankGui_credentialsContainer.child("blid").setText("<just:right> BLID" SPC %blid);
 	CMBankGui_credentialsContainer.child("account").setText("<just:right>#" @ %account);
 
+	clientcmdCM_Bank_clearLedger();
+
 	commandToServer('CM_Bank_requestBalance', %account, %pin);
 	commandToServer('CM_Bank_requestLedger', %account, %pin);
 }
@@ -42,7 +44,7 @@ function clientcmdCM_Bank_loginFailed() {
 }
 
 function clientcmdCM_Bank_setBalance(%amount) {
-	CMBankGui_balanceAmount.setText("<just:center>" @ %amount);
+	CMBankGui_balanceAmount.setText("<just:center>" @ "$" @ commaSeparateAmount(%amount));
 }
 
 function clientcmdCM_Bank_addLedgerRecord(%date, %title, %amount) {
@@ -53,24 +55,24 @@ function clientcmdCM_Bank_addLedgerRecord(%date, %title, %amount) {
 	%listGUI = CMBankGui_ledgerList;
 	%date = strReplace(%date, "/", " ");
 
-	if(!isObject(%headingGUI = %listGUI.child("heading" @ stripChars(%date, " ")))) {
-		switch(getWord(%date, 0)) {
-			case 0: %monthName = "January";
-			case 1: %monthName = "February";
-			case 2: %monthName = "March";
-			case 3: %monthName = "April";
-			case 4: %monthName = "May";
-			case 5: %monthName = "June";
-			case 6: %monthName = "July";
-			case 7: %monthName = "August";
-			case 8: %monthName = "September";
-			case 9: %monthName = "October";
-			case 10: %monthName = "November";
-			case 11: %monthName = "December";
-			default: %monthName = "ERROR";
-		}
+	switch(getWord(%date, 0)) {
+		case 0: %monthName = "January";
+		case 1: %monthName = "February";
+		case 2: %monthName = "March";
+		case 3: %monthName = "April";
+		case 4: %monthName = "May";
+		case 5: %monthName = "June";
+		case 6: %monthName = "July";
+		case 7: %monthName = "August";
+		case 8: %monthName = "September";
+		case 9: %monthName = "October";
+		case 10: %monthName = "November";
+		case 11: %monthName = "December";
+		default: %monthName = "ERROR";
+	}
 
-		%headingGUI = new GuiSwatchCtrl("_heading" @ stripChars(%date, " ")) {
+	if(!isObject(%headingGUI = %listGUI.child("heading" @ %monthName))) {
+		%headingGUI = new GuiSwatchCtrl("_heading" @ %monthName) {
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
@@ -145,11 +147,11 @@ function clientcmdCM_Bank_addLedgerRecord(%date, %title, %amount) {
 		%listGUI.addListGuiObject(%headingGUI);
 	} else {
 		%total = %headingGUI.child("amount").getText();
-		%total = stripChars(%total, stripChars(%total, "1234")) + %amount;
+		%total = stripChars(%total, stripChars(%total, "1234567890")) + %amount;
 		%headingGUI.child("amount").setText("<just:right>" @ (%total >= 0 ? "+$" : "-$") @ mAbs(%total));
 	}
 
-	%gui = new GuiBitmapBorderCtrl("_heading" @ %date @ "_record" @ %listGUI.getCount()) {
+	%gui = new GuiBitmapBorderCtrl("_heading" @ %monthName @ "_record" @ %listGUI.getCount()) {
 		profile = "CMBorderThreeProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
@@ -223,7 +225,7 @@ function clientcmdCM_Bank_addLedgerRecord(%date, %title, %amount) {
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "24 5";
-			extent = "22 12";
+			extent = "23 12";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -231,7 +233,7 @@ function clientcmdCM_Bank_addLedgerRecord(%date, %title, %amount) {
 			lineSpacing = "2";
 			allowColorChars = "0";
 			maxChars = "-1";
-			text = "<color:555555>" @ ordinalNumber(getWord(%date, 1));
+			text = "<color:555555>" @ ordinalNumber(getWord(%date, 1) | 0);
 			maxBitmapHeight = "-1";
 			selectable = "1";
 			autoResize = "1";
@@ -284,6 +286,7 @@ function clientcmdCM_Bank_addLedgerRecord(%date, %title, %amount) {
 // ============================================================
 function CMBankGui::onWake(%this) {
 	CMBankGui_window.setVisible(0);
+	CMBankGui_transferWindow.setVisible(0);
 	//CMBankGui_createWindow.setVisible(0);
 	CMBankGui_loginWindow.setVisible(1);
 
@@ -294,10 +297,44 @@ function CMBankGui::login(%this) {
 	commandToServer('CM_Bank_requestLogin', CMBankGui_loginAccountNumber.getValue(), CMBankGui_loginPIN.getValue());
 }
 
-function CMBankGui::depositAmount(%this) {
-	commandToServer('CM_Bank_depositAmount', CMBankGui_loginAccountNumber.getValue(), CMBankGui_loginPIN.getValue(), CMBankGui_fundTransferAmount.getValue());
+function CMBankGui::depositAll(%this) {
+	%account = CMBankGui_loginAccountNumber.getValue();
+	%pin = CMBankGui_loginPIN.getValue();
+
+	commandToServer('CM_Bank_depositAll', %account, %pin);
+
+	clientcmdCM_Bank_clearLedger();
+
+	commandToServer('CM_Bank_requestBalance', %account, %pin);
+	commandToServer('CM_Bank_requestLedger', %account, %pin);
 }
 
 function CMBankGui::withdrawAmount(%this) {
-	commandToServer('CM_Bank_withdrawAmount', CMBankGui_loginAccountNumber.getValue(), CMBankGui_loginPIN.getValue(), CMBankGui_fundTransferAmount.getValue());
+	%account = CMBankGui_loginAccountNumber.getValue();
+	%pin = CMBankGui_loginPIN.getValue();
+
+	commandToServer('CM_Bank_withdrawAmount', %account, %pin, CMBankGui_fundAmount.getValue());
+
+	clientcmdCM_Bank_clearLedger();
+
+	commandToServer('CM_Bank_requestBalance', %account, %pin);
+	commandToServer('CM_Bank_requestLedger', %account, %pin);
+}
+
+function CMBankGui::transferAmountFrontend(%this) {
+	CMBankGui_transferWindow.setVisible(1);
+	CMBankGui_fundTransferRecipient.setValue("0-0000-0000-00");
+	CMBankGui_fundTransferAmount.setValue(CMBankGui_fundAmount.getValue());
+}
+
+function CMBankGui::transferAmount(%this) {
+	%account = CMBankGui_loginAccountNumber.getValue();
+	%pin = CMBankGui_loginPIN.getValue();
+
+	commandToServer('CM_Bank_transferAmount', %account, %pin, CMBankGui_fundTransferAmount.getValue(), CMBankGui_fundTransferRecipient.getValue());
+
+	clientcmdCM_Bank_clearLedger();
+
+	commandToServer('CM_Bank_requestBalance', %account, %pin);
+	commandToServer('CM_Bank_requestLedger', %account, %pin);
 }

@@ -16,7 +16,7 @@ exec("Add-Ons/Client_CityMod/res/gui/CMOrganizationManager.gui");
 function clientcmdCM_Organizations_manageOrganization(%id, %name) {
 	CMOrganizationManagerGui.organizationID = %id;
 	CMOrganizationManagerGui.organizationName = %name;
-	CMOrganizationManagerGui_window.text = %name SPC "Manager";
+	CMOrganizationManagerGui_window.setText("Organization Manager (" @ %name @ ")");
 
 	if(CMOrganizationsGui.isAwake()) {
 		closeCMGui("Organizations");
@@ -35,6 +35,11 @@ function clientcmdCM_Organizations_clearJobs() {
 	CMOrganizationManagerGui_jobsList.setExtentH(1);
 }
 
+function clientcmdCM_Organizations_clearJobGroups() {
+	CMOrganizationManagerGui_jobsGroupList.deleteAll();
+	CMOrganizationManagerGui_jobsGroupList.setExtentH(1);
+}
+
 // Deprecated
 function clientcmdCM_Organizations_clearInvites() {
 	CMOrganizationManagerGui_userInvitationsList.deleteAll();
@@ -51,12 +56,71 @@ function clientcmdCM_Organizations_clearFinanceLedger() {
 	CMOrganizationManagerGui_financeLedgerList.setExtentH(1);
 }
 
-function clientcmdCM_Organizations_setUserPrivelegeLevel(%level) {
+function clientcmdCM_Organizations_setUserPrivilegeLevel(%level) {
 	if(!strLen(%level)) {
 		return;
 	}
 
-	CMOrganizationManagerGui.userPrivelegeLevel = %level;
+	CMOrganizationManagerGui.userPrivilegeLevel = %level;
+
+	if(%level == 0) {
+		CMOrganizationManagerGui_overviewButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_generalButton.mColor = "245 245 245 255";
+		CMOrganizationManagerGui_membersButton.mColor = "245 245 245 255";
+		CMOrganizationManagerGui_jobsButton.mColor = "245 245 245 255";
+		CMOrganizationManagerGui_applicationsButton.mColor = "245 245 245 255";
+		CMOrganizationManagerGui_financeButton.mColor = "245 245 245 255";
+	} else if(%level == 1) {
+		CMOrganizationManagerGui_overviewButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_generalButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_membersButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_jobsButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_applicationsButton.mColor = "245 245 245 255";
+		CMOrganizationManagerGui_financeButton.mColor = "245 245 245 255";
+	} else {
+		CMOrganizationManagerGui_overviewButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_generalButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_membersButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_jobsButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_applicationsButton.mColor = "255 255 255 255";
+		CMOrganizationManagerGui_financeButton.mColor = "255 255 255 255";
+	}
+
+	if(%level == 3) {
+		CMOrganizationManagerGui_leaveButton.setText("Disband");
+		CMOrganizationManagerGui_disbandLock.setVisible(1);
+	} else {
+		CMOrganizationManagerGui_leaveButton.setText("Leave");
+		CMOrganizationManagerGui_disbandLock.setVisible(0);
+	}
+
+	if(%level < 1) {
+		CMOrganizationManagerGui_leaveButton.setVisible(0);
+	} else {
+		CMOrganizationManagerGui_leaveButton.setVisible(1);
+	}
+}
+
+function clientcmdCM_Organizations_setOverviewInfo(%name, %founded, %founder, %owner, %members, %jobs, %openings, %avgsalary, %hired, %job, %salary, %infractions) {
+	if(!strLen(%name) || !strLen(%founded) || !strLen(%founder) || !strLen(%owner) || !strLen(%members) || !strLen(%jobs) || !strLen(%openings) || !strLen(%avgsalary)) {
+		return;
+	}
+
+	CMOrganizationManagerGui_overviewPanel.child("name").setText("<just:center>" @ %name);
+	CMOrganizationManagerGui_overviewPanel.child("founded").setText("<just:center>Since" SPC %founded);
+	CMOrganizationManagerGui_overviewPanel.child("ownership").setText("<just:center>Founded by" SPC %founder SPC "| Owned by" SPC %owner);
+
+	CMOrganizationManagerGui_overviewPanel.child("statistics").child("members").setText("Members: <font:Verdana:13>" @ %members);
+	CMOrganizationManagerGui_overviewPanel.child("statistics").child("jobs").setText("Jobs: <font:Verdana:13>" @ %jobs);
+	CMOrganizationManagerGui_overviewPanel.child("statistics").child("openings").setText("Job Openings: <font:Verdana:13>" @ %openings);
+	CMOrganizationManagerGui_overviewPanel.child("statistics").child("avgsalary").setText("Average Salary: <font:Verdana:13>" @ %avgsalary);
+
+	if(strLen(%hired) && strLen(%job) && strLen(%salary) && strLen(%infractions)) {
+		CMOrganizationManagerGui_overviewPanel.child("details").child("hired").setText("Hired On / Member Since: <font:Verdana:13>" @ %hired);
+		CMOrganizationManagerGui_overviewPanel.child("details").child("job").setText("Current Job: <font:Verdana:13>" @ %job);
+		CMOrganizationManagerGui_overviewPanel.child("details").child("salary").setText("Current Salary: <font:Verdana:13>" @ %salary);
+		CMOrganizationManagerGui_overviewPanel.child("details").child("infractions").setText("Infractions: <font:Verdana:13>" @ %infractions);
+	}
 }
 
 function clientcmdCM_Organizations_setGeneralInfo(%name, %type, %owner, %open, %hidden, %description) {
@@ -73,9 +137,9 @@ function clientcmdCM_Organizations_setGeneralInfo(%name, %type, %owner, %open, %
 	(%descriptionGui = CMOrganizationManagerGui_generalPanel.child("description")).child("value").setText("<just:right>" @ "... [" @ strLen(%description) @ "]");
 	%descriptionGui.fullDescription = %description;
 
-	if(CMOrganizationManagerGui.userPrivelegeLevel < 2) {
+	if(CMOrganizationManagerGui.userPrivilegeLevel < 2) {
 		CMOrganizationManagerGui_generalPanel.child("nameEdit").setVisible(0);
-		%typeGui.setExtentW(134);
+		%typeGui.setExtentW(234);
 
 		%ownerGui.child("edit").setVisible(0);
 		%ownerGui.child("divider").setVisible(0);
@@ -94,7 +158,7 @@ function clientcmdCM_Organizations_setGeneralInfo(%name, %type, %owner, %open, %
 		%descriptionGui.child("value").setPositionX(25);
 	} else {
 		CMOrganizationManagerGui_generalPanel.child("nameEdit").setVisible(1);
-		%typeGui.setExtentW(290);
+		%typeGui.setExtentW(390);
 
 		%ownerGui.child("edit").setVisible(1);
 		%ownerGui.child("divider").setVisible(1);
@@ -114,40 +178,80 @@ function clientcmdCM_Organizations_setGeneralInfo(%name, %type, %owner, %open, %
 	}
 }
 
-function clientcmdCM_Organizations_addMember(%bl_id, %name, %jobID, %jobName, %owner) {
-	if(!strLen(%bl_id) || !strLen(%name) || ((!strLen(%jobID) || !strLen(%jobName)) && !strLen(%owner))) {
+function clientcmdCM_Organizations_addMember(%bl_id, %name, %jobID, %jobName, %hired, %infractions, %owner) {
+	if(!strLen(%bl_id) || !strLen(%name) || ((!strLen(%jobID) || !strLen(%jobName)) && !%owner)) {
 		return;
 	}
 
-	%canEdit = CMOrganizationManagerGui.userPrivelegeLevel >= 2 ? true : false;
+	%canEdit = CMOrganizationManagerGui.userPrivilegeLevel >= 2 ? true : false;
 	%listGUI = CMOrganizationManagerGui_membersList;
 
-	%gui = new GuiBitmapBorderCtrl("_member" @ %listGUI.getCount()) {
-		profile = "CMBorderThreeProfile";
+	%gui = new GuiSwatchCtrl("_member" @ %listGUI.getCount()) {
+		profile = "GuiDefaultProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = "1 0";
-		extent = "271 34";
+		extent = "371 52";
 		minExtent = "8 2";
 		enabled = "1";
 		visible = "1";
 		clipToParent = "1";
+		color = "0 0 0 0";
 		memberBL_ID = %bl_id;
 		memberName = %name;
 		memberJob = %jobID;
-		memberIsOwner = %owner == true ? true : false;
+		memberHiredDate = %hired;
+		memberInfractions = %infractions;
+		memberIsOwner = %owner;
 
-		new GuiSwatchCtrl("_bg") {
-			profile = "GuiDefaultProfile";
-			horizSizing = "relative";
-			vertSizing = "relative";
+		new GuiBitmapBorderCtrl() {
+			profile = "CMBorderOneProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
 			position = "0 0";
-			extent = "271 34";
+			extent = "371 52";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			color = "248 248 248 255";
+
+			new GuiSwatchCtrl() {
+				profile = "GuiDefaultProfile";
+				horizSizing = "relative";
+				vertSizing = "relative";
+				position = "0 0";
+				extent = "371 52";
+				minExtent = "8 2";
+				enabled = "1";
+				visible = "1";
+				clipToParent = "1";
+				color = "255 255 255 255";
+			};
+		};
+
+		new GuiBitmapBorderCtrl() {
+			profile = "CMBorderThreeProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "371 34";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+
+			new GuiSwatchCtrl() {
+				profile = "GuiDefaultProfile";
+				horizSizing = "relative";
+				vertSizing = "relative";
+				position = "0 0";
+				extent = "371 34";
+				minExtent = "8 2";
+				enabled = "1";
+				visible = "1";
+				clipToParent = "1";
+				color = "248 248 248 255";
+			};
 		};
 
 		new GuiMLTextCtrl("_name") {
@@ -155,7 +259,7 @@ function clientcmdCM_Organizations_addMember(%bl_id, %name, %jobID, %jobName, %o
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "5 3";
-			extent = "230 13";
+			extent = "280 13";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -174,7 +278,7 @@ function clientcmdCM_Organizations_addMember(%bl_id, %name, %jobID, %jobName, %o
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "6 17";
-			extent = "230 12";
+			extent = "279 12";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -189,39 +293,16 @@ function clientcmdCM_Organizations_addMember(%bl_id, %name, %jobID, %jobName, %o
 		};
 
 		new GuiBitmapButtonCtrl() {
-			profile = "CMButtonSmallColoredProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "249 9";
-			extent = "16 16";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = %canEdit ? 1 : 0;
-			clipToParent = "1";
-			command = "CMOrganizationManagerGui.kickMemberFrontend(" @ %blid @ ", \"" @ %name @ "\");";
-			text = " ";
-			groupNum = "-1";
-			buttonType = "PushButton";
-			bitmap = "Add-Ons/Client_CityMod/res/ui/closeButton/closeButton";
-			lockAspectRatio = "0";
-			alignLeft = "0";
-			alignTop = "0";
-			overflowImage = "0";
-			mKeepCached = "0";
-			mColor = "255 75 75 255";
-		};
-
-		new GuiBitmapButtonCtrl() {
 			profile = "CMButtonSmallProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "187 5";
+			position = "287 5";
 			extent = "60 24";
 			minExtent = "8 2";
 			enabled = "1";
-			visible = %canEdit ? 1 : 0;
+			visible = %canEdit;
 			clipToParent = "1";
-			command = "CMOrganizationManagerGui.changeMemberJobFrontend(" @ %blid @ ", \"" @ %name @ "\");";
+			command = "CMOrganizationManagerGui.changeMemberJobFrontend(" @ %bl_id @ ", \"" @ %name @ "\");";
 			text = "Reassign";
 			groupNum = "-1";
 			buttonType = "PushButton";
@@ -235,26 +316,45 @@ function clientcmdCM_Organizations_addMember(%bl_id, %name, %jobID, %jobName, %o
 		};
 
 		new GuiBitmapButtonCtrl() {
-			profile = "CMButtonSmallProfile";
+			profile = "CMButtonSmallColoredProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "126 5";
-			extent = "60 24";
+			position = "349 9";
+			extent = "16 16";
 			minExtent = "8 2";
 			enabled = "1";
-			visible = %canEdit ? 1 : 0;
+			visible = %canEdit;
 			clipToParent = "1";
-			command = "CMOrganizationManagerGui.viewMember(" @ %blid @ ");";
-			text = "Info";
+			command = "CMOrganizationManagerGui.kickMemberFrontend(" @ %bl_id @ ", \"" @ %name @ "\");";
+			text = " ";
 			groupNum = "-1";
 			buttonType = "PushButton";
-			bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/closeButton/closeButton";
 			lockAspectRatio = "0";
 			alignLeft = "0";
 			alignTop = "0";
 			overflowImage = "0";
 			mKeepCached = "0";
-			mColor = "248 248 248 255";
+			mColor = "255 75 75 255";
+		};
+
+		new GuiMLTextCtrl("_info") {
+			profile = "CMTextTinyBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "6 35";
+			extent = "330 12";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = "Hired: <font:Verdana:12>" @ %hired @ "        " @ "<font:Verdana Bold:12>Infractions: <font:Verdana:12>" @ (%infractions == 0 ? "None" : %infractions);
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
 		};
 	};
 
@@ -351,7 +451,7 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = "1 0";
-		extent = "124 65";
+		extent = "174 65";
 		minExtent = "8 2";
 		enabled = "1";
 		visible = "1";
@@ -364,7 +464,7 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 			horizSizing = "relative";
 			vertSizing = "relative";
 			position = "0 0";
-			extent = "124 79";
+			extent = "174 79";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -377,7 +477,7 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "5 3";
-			extent = "114 26";
+			extent = "164 13";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -396,7 +496,7 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "3 17";
-			extent = "118 43";
+			extent = "168 43";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -408,13 +508,36 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 0";
-				extent = "118 18";
+				extent = "168 18";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
 				clipToParent = "1";
 				command = "CMOrganizationManagerGui.editJob(" @ %jobID @ ");";
 				text = "Edit";
+				groupNum = "-1";
+				buttonType = "PushButton";
+				bitmap = "Add-Ons/Client_CityMod/res/ui/button_wide/button";
+				lockAspectRatio = "0";
+				alignLeft = "0";
+				alignTop = "0";
+				overflowImage = "0";
+				mKeepCached = "0";
+				mColor = "248 248 248 255";
+			};
+
+			new GuiBitmapButtonCtrl() {
+				profile = "CMButtonSmallProfile";
+				horizSizing = "right";
+				vertSizing = "bottom";
+				position = "1 17";
+				extent = "83 26";
+				minExtent = "8 2";
+				enabled = "1";
+				visible = "1";
+				clipToParent = "1";
+				command = "CMOrganizationManagerGui.editJobSkills(" @ %jobID @ ");";
+				text = "Skills";
 				groupNum = "-1";
 				buttonType = "PushButton";
 				bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
@@ -430,31 +553,8 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 				profile = "CMButtonSmallProfile";
 				horizSizing = "right";
 				vertSizing = "bottom";
-				position = "0 17";
-				extent = "60 26";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				command = "CMOrganizationManagerGui.editJobSkills(" @ %jobID @ ");";
-				text = "Skills";
-				groupNum = "-1";
-				buttonType = "PushButton";
-				bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
-				lockAspectRatio = "0";
-				alignLeft = "0";
-				alignTop = "0";
-				overflowImage = "0";
-				mKeepCached = "0";
-				mColor = "248 248 248 255";
-			};
-
-			new GuiBitmapButtonCtrl() {
-				profile = "CMButtonSmallProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "58 17";
-				extent = "60 26";
+				position = "84 17";
+				extent = "83 26";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -463,7 +563,7 @@ function clientcmdCM_Organizations_addJob(%jobID, %name) {
 				text = "Tasks";
 				groupNum = "-1";
 				buttonType = "PushButton";
-				bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
+				bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
 				lockAspectRatio = "0";
 				alignLeft = "0";
 				alignTop = "0";
@@ -513,15 +613,16 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 	}
 
 	%listGUI = CMOrganizationManagerGui_jobsGroupList;
+	%jobGUI = %listGUI.child("job" @ %jobID);
 
-	if(!isObject(%jobGUI = %listGUI.child("job" @ %jobID))) {
+	if(!isObject(%jobGUI)) {
 		%addJob = true;
 		%jobGUI = new GuiSwatchCtrl("_job" @ %jobID) {
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "1 0";
-			extent = "121 65";
+			extent = "171 65";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -535,7 +636,7 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 0";
-				extent = "121 20";
+				extent = "171 20";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -546,7 +647,7 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 					horizSizing = "relative";
 					vertSizing = "relative";
 					position = "0 0";
-					extent = "121 20";
+					extent = "171 20";
 					minExtent = "8 2";
 					enabled = "1";
 					visible = "1";
@@ -559,7 +660,7 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 					horizSizing = "right";
 					vertSizing = "bottom";
 					position = "5 2";
-					extent = "111 13";
+					extent = "161 13";
 					minExtent = "8 2";
 					enabled = "1";
 					visible = "1";
@@ -579,7 +680,7 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 16";
-				extent = "121 19";
+				extent = "171 19";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -588,15 +689,15 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 		};
 	}
 
-	%jobGUICount = %jobGUI.getCount();
-	%ypos = %jobGUICount < 1 ? 3 : %jobGUI.getObject(%jobGUICount - 1).getPositionY() + 12;
+	%jobGUIMemberCount = %jobGUI.child("body").getCount();
+	%ypos = %jobGUIMemberCount < 1 ? 3 : (%jobGUI.getObject(%jobGUIMemberCount - 1).getPositionY() + 12);
 
-	%jobGUI.child("body").add(new GuiMLTextCtrl("_member" @ %jobGUICount) {
+	%jobGUI.child("body").add(new GuiMLTextCtrl("_member" @ %jobGUIMemberCount) {
 		profile = "CMTextTinyBoldProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = "5" SPC %ypos;
-		extent = "111 12";
+		extent = "161 12";
 		minExtent = "8 2";
 		enabled = "1";
 		visible = "1";
@@ -800,7 +901,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 			alignTop = "0";
 			overflowImage = "0";
 			mKeepCached = "0";
-			mColor = "51 153 255 255";
+			mColor = "77 165 255 255";
 		};
 	});
 
@@ -1026,8 +1127,7 @@ function clientcmdCM_Organizations_addOrganizationInvitation(%bl_id) {
 
 	%listGUI = CMOrganizationManagerGui_userInvitationsList;
 
-	%GUIprefix = "CMOrganizationManagerGui_userInvitation" @ %listGUI.getCount();
-	%gui = new GuiBitmapBorderCtrl(%GUIprefix @ "Frame") {
+	%gui = new GuiBitmapBorderCtrl("_invitation" @ %listGUI.getCount()) {
 		profile = "CMBorderThreeProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
@@ -1038,8 +1138,7 @@ function clientcmdCM_Organizations_addOrganizationInvitation(%bl_id) {
 		visible = "1";
 		clipToParent = "1";
 
-		// Inner-Background Swatch
-		new GuiSwatchCtrl(%GUIprefix @ "BG") {
+		new GuiSwatchCtrl("_bg") {
 			profile = "GuiDefaultProfile";
 			horizSizing = "relative";
 			vertSizing = "relative";
@@ -1051,8 +1150,7 @@ function clientcmdCM_Organizations_addOrganizationInvitation(%bl_id) {
 			clipToParent = "1";
 			color = "248 248 248 255";
 
-			// Invitation Name Text
-			new GuiMLTextCtrl(%GUIprefix @ "Name") {
+			new GuiMLTextCtrl("_name") {
 				profile = "CMTextTinyBoldProfile";
 				horizSizing = "right";
 				vertSizing = "center";
@@ -1071,8 +1169,7 @@ function clientcmdCM_Organizations_addOrganizationInvitation(%bl_id) {
 				autoResize = "1";
 			};
 
-			// Invitation Revoke Button
-			new GuiBitmapButtonCtrl(%GUIprefix @ "RevokeButton") {
+			new GuiBitmapButtonCtrl() {
 				profile = "GuiDefaultProfile";
 				horizSizing = "right";
 				vertSizing = "bottom";
@@ -1100,299 +1197,154 @@ function clientcmdCM_Organizations_addOrganizationInvitation(%bl_id) {
 	%listGUI.addListGuiObject(%gui);
 }
 
-function clientcmdCM_Organizations_addApplication(%bl_id, %name, %jobID, %jobname) {
-	if(!strLen(%bl_id) || !strLen(%name) || !strLen(%jobID) || !strLen(%jobname)) {
+function clientcmdCM_Organizations_addApplication(%bl_id, %name, %jobID, %jobName) {
+	if(!strLen(%bl_id) || !strLen(%name) || !strLen(%jobID) || !strLen(%jobName)) {
 		return;
 	}
 
 	%listGUI = CMOrganizationManagerGui_applicationsList;
 
-	%GUIprefix = "CMOrganizationManagerGui_application" @ %listGUI.getCount();
-	%gui = new GuiBitmapBorderCtrl(%GUIprefix @ "Frame") {
+	%gui = new GuiBitmapBorderCtrl("_application" @ %listGUI.getCount()) {
 		profile = "CMBorderThreeProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = "1 0";
-		extent = "270 46";
+		extent = "370 46";
 		minExtent = "8 2";
 		enabled = "1";
 		visible = "1";
 		clipToParent = "1";
 
-		new GuiSwatchCtrl(%GUIprefix @ "BG") {
+		new GuiSwatchCtrl("_bg") {
 			profile = "GuiDefaultProfile";
 			horizSizing = "relative";
 			vertSizing = "relative";
 			position = "0 0";
-			extent = "270 46";
+			extent = "370 46";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
 			color = "248 248 248 255";
-
-			new GuiMLTextCtrl(%GUIprefix @ "Header") {
-				profile = "CMTextSmallBoldProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "5 3";
-				extent = "261 13";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				lineSpacing = "2";
-				allowColorChars = "0";
-				maxChars = "-1";
-				text = %name @ "<font:Verdana:12> | Applying for <font:Verdana Bold:12>" @ %jobname @ "<font:Verdana:10> (#" @ %jobID @ ")";
-				maxBitmapHeight = "-1";
-				selectable = "1";
-				autoResize = "1";
-			};
-
-			new GuiBitmapButtonCtrl(%GUIprefix @ "AcceptButton") {
-				profile = "CMButtonSmallColoredProfile";
-				horizSizing = "right";
-				vertSizing = "top";
-				position = "174 19";
-				extent = "46 22";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				command = "CMOrganizationManagerGui.acceptApplication(" @ %bl_id @ ");";
-				text = "Accept";
-				groupNum = "-1";
-				buttonType = "PushButton";
-				bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
-				lockAspectRatio = "0";
-				alignLeft = "0";
-				alignTop = "0";
-				overflowImage = "0";
-				mKeepCached = "0";
-				mColor = "0 171 102 255";
-			};
-
-			new GuiBitmapButtonCtrl(%GUIprefix @ "DeclineButton") {
-				profile = "CMButtonSmallColoredProfile";
-				horizSizing = "right";
-				vertSizing = "top";
-				position = "219 19";
-				extent = "46 22";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				command = "CMOrganizationManagerGui.declineApplication(" @ %bl_id @ ");";
-				text = "Decline";
-				groupNum = "-1";
-				buttonType = "PushButton";
-				bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
-				lockAspectRatio = "0";
-				alignLeft = "0";
-				alignTop = "0";
-				overflowImage = "0";
-				mKeepCached = "0";
-				mColor = "255 75 75 255";
-			};
-
-			new GuiBitmapButtonCtrl(%GUIprefix @ "RequiredSkillsButton") {
-				profile = "CMButtonSmallProfile";
-				horizSizing = "right";
-				vertSizing = "top";
-				position = "5 19";
-				extent = "85 22";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				command = "CMOrganizationManagerGui.viewApplicationJobSkills(" @ %jobID @ ");";
-				text = "Required Skills";
-				groupNum = "-1";
-				buttonType = "PushButton";
-				bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
-				lockAspectRatio = "0";
-				alignLeft = "0";
-				alignTop = "0";
-				overflowImage = "0";
-				mKeepCached = "0";
-				mColor = "255 255 255 255";
-			};
-
-			new GuiBitmapButtonCtrl(%GUIprefix @ "ApplicantSkillsButton") {
-				profile = "CMButtonSmallProfile";
-				horizSizing = "right";
-				vertSizing = "top";
-				position = "89 19";
-				extent = "85 22";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				command = "CMOrganizationManagerGui.viewApplicantSkills(" @ %bl_id @ "," SPC %name @ ");";
-				text = "Applicant Skills";
-				groupNum = "-1";
-				buttonType = "PushButton";
-				bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
-				lockAspectRatio = "0";
-				alignLeft = "0";
-				alignTop = "0";
-				overflowImage = "0";
-				mKeepCached = "0";
-				mColor = "255 255 255 255";
-			};
 		};
-	};
 
-	%listGUI.addListGuiObject(%gui);
-}
-
-function clientcmdCM_Organizations_addApplicantSkill(%name, %description, %level, %requiredlevel) {
-	if(!strLen(%name) || !strLen(%description) || !strLen(%level) || !strLen(%requiredlevel)) {
-		return;
-	}
-
-	%listGUI = CMOrganizationManagerGui_applicationsList;
-
-	%GUIprefix = "CMOrganizationManagerGui_applicantSkillsSkill" @ %listGUI.getCount();
-	%gui = new GuiBitmapBorderCtrl(%GUIprefix @ "Frame") {
-		profile = "CMBorderThreeProfile";
-		horizSizing = "right";
-		vertSizing = "bottom";
-		position = "2 0";
-		extent = "282 50";
-		minExtent = "8 2";
-		enabled = "1";
-		visible = "1";
-		clipToParent = "1";
-
-		new GuiSwatchCtrl(%GUIprefix @ "BG") {
-			profile = "GuiDefaultProfile";
-			horizSizing = "relative";
-			vertSizing = "relative";
-			position = "0 0";
-			extent = "282 50";
+		new GuiMLTextCtrl("_header") {
+			profile = "CMTextSmallBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "5 3";
+			extent = "361 13";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			color = "248 248 248 255";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = %name @ "<font:Verdana:12> | Applying for <font:Verdana Bold:12>" @ %jobname @ "<font:Verdana:10> (#" @ %jobID @ ")";
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
 
-			new GuiBitmapBorderCtrl() {
-				profile = "CMBorderThreeProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "47 32";
-				extent = "235 50";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-			};
-			new GuiMLTextCtrl(%GUIprefix @ "Description") {
-				profile = "CMTextTinyProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "53 18";
-				extent = "227 12";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				lineSpacing = "2";
-				allowColorChars = "0";
-				maxChars = "-1";
-				text = %description;
-				maxBitmapHeight = "-1";
-				selectable = "1";
-				autoResize = "1";
-			};
-			new GuiMLTextCtrl(%GUIprefix @ "Name") {
-				profile = "CMTextMediumBoldProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "53 4";
-				extent = "227 14";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				lineSpacing = "2";
-				allowColorChars = "0";
-				maxChars = "-1";
-				text = %name;
-				maxBitmapHeight = "-1";
-				selectable = "1";
-				autoResize = "1";
-			};
-			new GuiBitmapBorderCtrl() {
-				profile = "CMBorderThreeProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "0 0";
-				extent = "50 50";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallProfile";
+			horizSizing = "right";
+			vertSizing = "top";
+			position = "4 19";
+			extent = "94 22";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			command = "CMOrganizationManagerGui.viewApplication(" @ %jobID @ ");";
+			text = "Applicant Info";
+			groupNum = "-1";
+			buttonType = "PushButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			mKeepCached = "0";
+			mColor = "255 255 255 255";
+		};
 
-				new GuiBitmapCtrl(%GUIprefix @ "Icon") {
-					profile = "GuiDefaultProfile";
-					horizSizing = "center";
-					vertSizing = "center";
-					position = "7 7";
-					extent = "35 35";
-					minExtent = "8 2";
-					enabled = "1";
-					visible = "1";
-					clipToParent = "1";
-					bitmap = "Add-Ons/Client_CityMod/res/gui/skills/" @ strLwr(%name);
-					wrap = "0";
-					lockAspectRatio = "0";
-					alignLeft = "0";
-					alignTop = "0";
-					overflowImage = "0";
-					keepCached = "0";
-					mColor = "255 255 255 255";
-					mMultiply = "0";
-				};
-			};
-			new GuiMLTextCtrl(%GUIprefix @ "LevelText") {
-				profile = "CMTextTinyBoldProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "54 33";
-				extent = "227 12";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				lineSpacing = "2";
-				allowColorChars = "0";
-				maxChars = "-1";
-				text = "Lvl" SPC %level SPC "<font:Verdana:12>" @ ((%level < %requiredlevel) ? "<color:FF0000>" : "") @ "(Req. Lvl" SPC %requiredlevel @ ")";
-				maxBitmapHeight = "-1";
-				selectable = "1";
-				autoResize = "1";
-			};
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallProfile";
+			horizSizing = "right";
+			vertSizing = "top";
+			position = "100 19";
+			extent = "94 22";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			command = "CMOrganizationManagerGui.viewApplicationSkills(" @ %jobID @ ");";
+			text = "Applicant Skills";
+			groupNum = "-1";
+			buttonType = "PushButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/button_regular/button";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			mKeepCached = "0";
+			mColor = "255 255 255 255";
+		};
+
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallColoredProfile";
+			horizSizing = "right";
+			vertSizing = "top";
+			position = "270 19";
+			extent = "47 22";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			command = "CMOrganizationManagerGui.acceptApplication(" @ %bl_id @ ");";
+			text = "Accept";
+			groupNum = "-1";
+			buttonType = "PushButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			mKeepCached = "0";
+			mColor = "0 171 102 255";
+		};
+
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallColoredProfile";
+			horizSizing = "right";
+			vertSizing = "top";
+			position = "319 19";
+			extent = "47 22";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			command = "CMOrganizationManagerGui.declineApplication(" @ %bl_id @ ");";
+			text = "Decline";
+			groupNum = "-1";
+			buttonType = "PushButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			mKeepCached = "0";
+			mColor = "255 75 75 255";
 		};
 	};
 
 	%listGUI.addListGuiObject(%gui);
 
-	CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.totalSkills++;
-
-	if(%level >= %requiredlevel) {
-		CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.skillsMet++;
-	}
-
-	CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.setText("0/0");
-
-	if(CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.skillsMet == CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.totalSkills) {
-		CMOrganizationManagerGui_applicantSkillsMeetsRequirementsText.setText("Yes");
-	} else {
-		CMOrganizationManagerGui_applicantSkillsMeetsRequirementsText.setText("No");
-	}
+	CMOrganizationManagerGui_applicationsCount.setText(%listGUI.getCount() SPC "Pending Applications");
+	CMOrganizationManagerGui_applicationsCount.forceReflow();
+	CMOrganizationManagerGui_applicationsCountBorder.setExtentW(3 + CMOrganizationManagerGui_applicationsCount.getExtentW() + 3);
 }
 
 function clientcmdCM_Organizations_setBalance(%amount) {
@@ -1637,20 +1589,21 @@ function clientcmdCM_Organizations_addLedgerRecord(%month, %title, %amount, %cur
 // ============================================================
 
 function CMOrganizationManagerGui::onWake(%this) {
-	CMOrganizationManagerGui_jobTasksEditWindow.setVisible(0);
+	//CMOrganizationManagerGui_jobTasksEditWindow.setVisible(0);
 	CMOrganizationManagerGui_jobSkillRequirementsWindow.setVisible(0);
 	CMOrganizationManagerGui_applicantSkillsWindow.setVisible(0);
 
-	CMOrganizationManagerGui.userPrivelegeLevel = 0;
-	commandtoserver('CM_Organizations_requestUserPrivelegeLevel', %this.organizationID);
+	CMOrganizationManagerGui.userPrivilegeLevel = 0;
+	commandtoserver('CM_Organizations_requestUserPrivilegeLevel', %this.organizationID);
 
-	%this.selectPanel("GENERAL");
+	%this.selectPanel("OVERVIEW");
 }
 
 function CMOrganizationManagerGui::leaveOrganizationFrontend(%this) {
 	pushCMDialog(
 		"YESNO",
-		"Are you sure you want to leave the organization," SPC %this.organizationName @ "?",
+		"Are you sure you want to" SPC (CMOrganizationManagerGui.userPrivilegeLevel == 3 ? "disband" : "leave") SPC "the organization," SPC %this.organizationName @ "?"
+		@ (CMOrganizationManagerGui.userPrivilegeLevel == 3 ? "\ndoing so will kick all of its members, including yourself, and cause the organization to no longer exist." : ""),
 		"CMOrganizationManagerGui.leaveOrganization();"
 	);
 }
@@ -1717,66 +1670,75 @@ function CMOrganizationManagerGui::createJobFrontend(%this) {
 }
 
 function CMOrganizationManagerGui::selectPanel(%this, %name) {
-	CMOrganizationManagerGui_restrictedText.setVisible(0);
+	CMOrganizationManagerGui_overviewPanel.setVisible(0);
+	CMOrganizationManagerGui_generalPanel.setVisible(0);
+	CMOrganizationManagerGui_membersPanel.setVisible(0);
+	CMOrganizationManagerGui_jobsPanel.setVisible(0);
+	CMOrganizationManagerGui_applicationsPanel.setVisible(0);
+	CMOrganizationManagerGui_financePanel.setVisible(0);
 
-	if(%name $= "GENERAL") {
+	if((%name !$= "OVERVIEW") && (CMOrganizationManagerGui.userPrivilegeLevel < 1)) {
+		CMOrganizationManagerGui_restrictedText.setVisible(1);
+		return;
+	} else {
+		CMOrganizationManagerGui_restrictedText.setVisible(0);
+	}
+
+	if(%name $= "OVERVIEW") {
+		CMOrganizationManagerGui_overviewPanel.setVisible(1);
+		CMOrganizationManagerGui_overviewPanel.child("details").setVisible(1);
+
+		if(CMOrganizationManagerGui.userPrivilegeLevel < 1) {
+			CMOrganizationManagerGui_overviewPanel.child("restricted").setVisible(1);
+		} else {
+			if(CMOrganizationManagerGui.userPrivilegeLevel == 3) {
+				CMOrganizationManagerGui_overviewPanel.child("details").setVisible(0);
+			}
+
+			CMOrganizationManagerGui_overviewPanel.child("restricted").setVisible(0);
+		}
+
+		commandtoserver('CM_Organizations_requestOverviewInfo', %this.organizationID);
+	} else if(%name $= "GENERAL") {
 		CMOrganizationManagerGui_generalPanel.setVisible(1);
-		CMOrganizationManagerGui_membersPanel.setVisible(0);
-		CMOrganizationManagerGui_jobsPanel.setVisible(0);
-		CMOrganizationManagerGui_applicationsPanel.setVisible(0);
-		CMOrganizationManagerGui_financePanel.setVisible(0);
 
 		commandtoserver('CM_Organizations_requestGeneralInfo', %this.organizationID);
 	} else if(%name $= "MEMBERS") {
-		CMOrganizationManagerGui_generalPanel.setVisible(0);
 		CMOrganizationManagerGui_membersPanel.setVisible(1);
-		CMOrganizationManagerGui_jobsPanel.setVisible(0);
-		CMOrganizationManagerGui_applicationsPanel.setVisible(0);
-		CMOrganizationManagerGui_financePanel.setVisible(0);
 
 		CMOrganizationManagerGui_memberInfoText.setText("<just:center>There are currently 0 Members in the Organization");
 		clientcmdCM_Organizations_clearMembers();
 
 		commandtoserver('CM_Organizations_requestMembers', %this.organizationID);
 	} else if(%name $= "JOBS") {
-		CMOrganizationManagerGui_generalPanel.setVisible(0);
-		CMOrganizationManagerGui_membersPanel.setVisible(0);
 		CMOrganizationManagerGui_jobsPanel.setVisible(1);
-		CMOrganizationManagerGui_applicationsPanel.setVisible(0);
-		CMOrganizationManagerGui_financePanel.setVisible(0);
 
 		CMOrganizationManagerGui_jobsInfoText.setText("<just:center>There are currently 0 total Jobs");
 		clientcmdCM_Organizations_clearJobs();
+		clientcmdCM_Organizations_clearJobGroups();
 
 		commandtoserver('CM_Organizations_requestJobs', %this.organizationID);
 		commandtoserver('CM_Organizations_requestJobGroups', %this.organizationID);
 	} else if(%name $= "APPLICATIONS") {
-		CMOrganizationManagerGui_generalPanel.setVisible(0);
-		CMOrganizationManagerGui_membersPanel.setVisible(0);
-		CMOrganizationManagerGui_jobsPanel.setVisible(0);
-		CMOrganizationManagerGui_applicationsPanel.setVisible(1);
-		CMOrganizationManagerGui_financePanel.setVisible(0);
-
-		if(CMOrganizationManagerGui.userPrivelegeLevel < 2) {
-			CMOrganizationManagerGui_applicationsPanel.setVisible(0);
+		if(CMOrganizationManagerGui.userPrivilegeLevel < 2) {
 			CMOrganizationManagerGui_restrictedText.setVisible(1);
 			return;
+		} else {
+			CMOrganizationManagerGui_applicationsPanel.setVisible(1);
 		}
 
+		CMOrganizationManagerGui_applicationsCount.setText("0 Pending Applications");
+		CMOrganizationManagerGui_applicationsCount.forceReflow();
+		CMOrganizationManagerGui_applicationsCountBorder.setExtentW(3 + CMOrganizationManagerGui_applicationsCount.getExtentW() + 3);
 		clientcmdCM_Organizations_clearApplications();
 
 		commandtoserver('CM_Organizations_requestApplications', %this.organizationID);
 	} else if(%name $= "FINANCE") {
-		CMOrganizationManagerGui_generalPanel.setVisible(0);
-		CMOrganizationManagerGui_membersPanel.setVisible(0);
-		CMOrganizationManagerGui_jobsPanel.setVisible(0);
-		CMOrganizationManagerGui_applicationsPanel.setVisible(0);
-		CMOrganizationManagerGui_financePanel.setVisible(1);
-
-		if(CMOrganizationManagerGui.userPrivelegeLevel < 2) {
-			CMOrganizationManagerGui_financePanel.setVisible(0);
+		if(CMOrganizationManagerGui.userPrivilegeLevel < 2) {
 			CMOrganizationManagerGui_restrictedText.setVisible(1);
 			return;
+		} else {
+			CMOrganizationManagerGui_financePanel.setVisible(1);
 		}
 
 		clientcmdCM_Organizations_clearFinanceLedger();
@@ -1787,7 +1749,11 @@ function CMOrganizationManagerGui::selectPanel(%this, %name) {
 }
 
 function CMOrganizationManagerGui::leaveOrganization(%this) {
-	commandtoserver('CM_Organizations_leaveOrganization', %this.organizationID);
+	if(CMOrganizationManagerGui.userPrivilegeLevel == 3) {
+		commandtoserver('CM_Organizations_disbandOrganization', %this.organizationID);
+	} else {
+		commandtoserver('CM_Organizations_leaveOrganization', %this.organizationID);
+	}
 }
 
 function CMOrganizationManagerGui::showTypeInfo(%this, %type) {
@@ -1933,16 +1899,16 @@ function CMOrganizationManagerGui::filterSkillRequirements(%this) {
 	CMOrganizationManagerGui_jobSkillRequirementsList1.resizeListGui();
 }
 
-function CMOrganizationManagerGui::editJobTasks(%this, %jobID) {
-	CMOrganizationManagerGui_jobTasksEditWindow.setVisible(1);
-	CMOrganizationManagerGui_jobTasksEditWindow.jobID = %jobID;
-
-	CMOrganizationManagerGui_jobTasksEditWindow.setText("Edit Job #" @ %jobID @ "'s Tasks");
-	CMOrganizationManagerGui_jobTasksEditFilter.setText("Task Filter");
-
-	commandtoserver('CM_Organizations_requestAllTasks');
-	commandtoserver('CM_Organizations_requestJobTasks', %this.organizationID, CMOrganizationManagerGui_jobTasksEditWindow.jobID);
-}
+//function CMOrganizationManagerGui::editJobTasks(%this, %jobID) {
+//	CMOrganizationManagerGui_jobTasksEditWindow.setVisible(1);
+//	CMOrganizationManagerGui_jobTasksEditWindow.jobID = %jobID;
+//
+//	CMOrganizationManagerGui_jobTasksEditWindow.setText("Edit Job #" @ %jobID @ "'s Tasks");
+//	CMOrganizationManagerGui_jobTasksEditFilter.setText("Task Filter");
+//
+//	commandtoserver('CM_Organizations_requestAllTasks');
+//	commandtoserver('CM_Organizations_requestJobTasks', %this.organizationID, CMOrganizationManagerGui_jobTasksEditWindow.jobID);
+//}
 
 function CMOrganizationManagerGui::deleteJob(%this, %jobID) {
 	commandtoserver('CM_Organizations_deleteJob', %this.organizationID, %jobID);
@@ -1956,10 +1922,6 @@ function CMOrganizationManagerGui::sendInvitation(%this, %bl_id) {
 // Deprecated
 function CMOrganizationManagerGui::revokeInvitation(%this, %bl_id) {
 	commandtoserver('CM_Organizations_rekoveInvitation', %this.organizationID, %bl_id);
-}
-
-function CMOrganizationManagerGui::viewApplicationJobSkills(%this, %jobID) {
-	// TO-DO
 }
 
 function CMOrganizationManagerGui::viewApplicantSkills(%this, %bl_id, %name) {
@@ -1981,6 +1943,24 @@ function CMOrganizationManagerGui::acceptApplication(%this, %bl_id) {
 
 function CMOrganizationManagerGui::declineApplication(%this, %bl_id) {
 	commandtoserver('CM_Organizations_declineApplication', %this.organizationID, %bl_id);
+}
+
+function CMOrganizationManagerGui::filterMembers(%this) {
+	%text = CMOrganizationManagerGui_membersSearchFilter.getValue();
+
+	for(%i = 0; %i < CMOrganizationManagerGui_membersList.getCount(); %i++) {
+		%object = CMOrganizationManagerGui_membersList.getObject(%i);
+
+		if((%text !$= "") && (%text !$= "Search for a Member") && !searchString(stripMLControlChars(%object.child("name").getValue()), %text)) {
+			%object.setVisible(0);
+		} else {
+			if(!%object.isVisible()) {
+				%object.setVisible(1);
+			}
+		}
+	}
+
+	CMOrganizationManagerGui_membersList.resizeListGui();
 }
 
 function CMOrganizationManagerGui::viewPreviousMonthFinance(%this, %direction) {
@@ -2024,4 +2004,11 @@ function CMOrganizationManagerGui::viewPreviousMonthFinance(%this, %direction) {
 
 	CMOrganizationManagerGui_financePreviousContainer.child("profit").setText("$" @ suffixAmount(getWord(CMOrganizationManagerGui_financePreviousContainer.month[CMOrganizationManagerGui_financePreviousContainer.currentMonth], 0), 1));
 	CMOrganizationManagerGui_financePreviousContainer.child("deficit").setText("$" @ suffixAmount(getWord(CMOrganizationManagerGui_financePreviousContainer.month[CMOrganizationManagerGui_financePreviousContainer.currentMonth], 0), 1));
+}
+
+function CMOrganizationManagerMouseEventCtrl::onMouseDown(%this, %modifierKey, %mousePoint, %mouseClickCount) {
+	if((%modifierKey == 4) || (%modifierKey == 8)) {
+		CMOrganizationManagerGui_disbandLock.setVisible(0);
+		CMOrganizationManagerGui_disbandLock.schedule(4000, "setVisible", 1);
+	}
 }

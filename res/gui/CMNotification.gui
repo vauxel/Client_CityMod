@@ -80,7 +80,7 @@ new GuiControl(CMNotificationGui) {
             alignTop = "0";
             overflowImage = "0";
             mKeepCached = "0";
-            mColor = "51 153 255 255";
+            mColor = "77 165 255 255";
          };
       };
       new GuiSwatchCtrl(CMNotificationGui_yesnoPane) {
@@ -169,7 +169,7 @@ new GuiControl(CMNotificationGui) {
             alignTop = "0";
             overflowImage = "0";
             mKeepCached = "0";
-            mColor = "51 153 255 255";
+            mColor = "77 165 255 255";
          };
          new GuiBitmapBorderCtrl() {
             profile = "CMBorderOneProfile";

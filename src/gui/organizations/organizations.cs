@@ -238,14 +238,14 @@ function clientcmdCM_Organizations_addOrganization(%id, %type, %open, %owner, %n
 			profile = "CMButtonSmallProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "257 35";
+			position = "202 35";
 			extent = "52 24";
 			minExtent = "8 2";
 			enabled = "1";
-			visible = "1";
+			visible = %isMember ? "0" : "1";
 			clipToParent = "1";
-			command = (%isMember ? "CMOrganizationsGui.manageOrganization(" @ %id @ ");" : "CMOrganizationsGui.joinOrganization(" @ %id @ ");");
-			text = (%isMember ? "View" : (%open ? "Join" : "Apply"));
+			command = "CMOrganizationsGui.joinOrganization(" @ %id @ ");";
+			text = %open ? "Join" : "Apply";
 			groupNum = "-1";
 			buttonType = "PushButton";
 			bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
@@ -256,206 +256,41 @@ function clientcmdCM_Organizations_addOrganization(%id, %type, %open, %owner, %n
 			mKeepCached = "0";
 			mColor = "248 248 248 255";
 		};
-	};
 
-	%listGUI.addListGuiObject(%gui);
-
-	CMOrganizationsGui_totalOrganizations.setText("<just:center>" @ (firstWord(stripMLControlChars(CMOrganizationsGui_totalOrganizations.getValue())) + 1) SPC "Organizations");
-	CMOrganizationsGui_totalJobs.setText("<just:center>" @ (firstWord(stripMLControlChars(CMOrganizationsGui_totalJobs.getValue())) + %jobs) SPC "Job Opportunities");
-}
-
-function clientcmdCM_Organizations_openApplicationForm(%name, %applicantName, %isCriminal, %applicantSkills) {
-	if(!strLen(%name) || !strLen(%applicantName) || !strLen(%isCriminal) || !strLen(%applicantSkills)) {
-		return;
-	}
-
-	CMOrganizationsGui_organizationApplication.child("name").setText("<just:center><font:Verdana Bold:16><color:777777>" @ %name);
-	CMOrganizationsGui_organizationApplication.child("applicantName").setText("<just:right><font:Verdana:14><color:444444>" @ %applicantName);
-	CMOrganizationsGui_organizationApplication.child("criminal").setValue(%isCriminal);
-
-	%applicantSkills = Stringify::parse(%applicantSkills);
-
-	if(!isObject(%applicantSkills)) {
-		return;
-	}
-
-	CMOrganizationsGui_organizationApplication.skills = %applicantSkills;
-	CMOrganizationsGui_organizationApplication.setVisible(1);
-}
-
-function clientcmdCM_Organizations_addApplicationJob(%id, %name) {
-	if(!strLen(%id) || !strLen(%name)) {
-		return;
-	}
-
-	%listGUI = CMOrganizationsGui_applicationJobList;
-
-	%gui = new GuiBitmapBorderCtrl("_job" @ %listGUI.getCount()) {
-		profile = "CMBorderThreeProfile";
-		horizSizing = "right";
-		vertSizing = "bottom";
-		position = "0 0";
-		extent = "267 25";
-		minExtent = "8 2";
-		enabled = "1";
-		visible = "1";
-		clipToParent = "1";
-
-		new GuiSwatchCtrl("_bg") {
-			profile = "GuiDefaultProfile";
-			horizSizing = "relative";
-			vertSizing = "relative";
-			position = "0 0";
-			extent = "267 25";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			color = "248 248 248 255";
-		};
-
-		new GuiMLTextCtrl("_name") {
-			profile = "GuiMLTextProfile";
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "6 5";
-			extent = "220 14";
+			position = "257 35";
+			extent = "52 24";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			lineSpacing = "2";
-			allowColorChars = "0";
-			maxChars = "-1";
-			text = "<font:Verdana Bold:14><color:444444>" @ %name;
-			maxBitmapHeight = "-1";
-			selectable = "1";
-			autoResize = "1";
-		};
-
-		new GuiBitmapButtonCtrl("_infoButton") {
-			profile = "CMButtonProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "228 5";
-			extent = "15 15";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			command = "CMOrganizationsGui.viewApplicationJobDescription(" @ %id @ ");";
-			text = " ";
+			command = "CMOrganizationsGui.manageOrganization(" @ %id @ ");";
+			text = "View";
 			groupNum = "-1";
 			buttonType = "PushButton";
-			bitmap = "Add-Ons/Client_CityMod/res/ui/infoButton/infoButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/button_small/button";
 			lockAspectRatio = "0";
 			alignLeft = "0";
 			alignTop = "0";
 			overflowImage = "0";
 			mKeepCached = "0";
-			mColor = "91 173 255 255";
+			mColor = "248 248 248 255";
 		};
 
-		new GuiRadioCtrl("_selectorButton") {
-			profile = "CMRadioButtonProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "248 6";
-			extent = "13 13";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			command = "CMOrganizationsGui.selectApplicationJob(" @ %id @ ", " @ "\"" @ %name @ "\");";
-			text = " ";
-			groupNum = "2";
-			buttonType = "RadioButton";
-		};
-	};
-
-	%listGUI.addListGuiObject(%gui);
-}
-
-function clientcmdCM_Organizations_addApplicationSkill(%name, %description, %reqLevel) {
-	if(!strLen(%name) || !strLen(%description) || !strLen(%reqLevel)) {
-		return;
-	}
-
-	%applicantLevel = CMOrganizationsGui_organizationApplication.skills.get(%name).get("level");
-	%listGUI = CMOrganizationsGui_applicationJobSkillsList;
-
-	%gui = new GuiBitmapBorderCtrl("_skill" @ %listGUI.getCount()) {
-		profile = "CMBorderThreeProfile";
-		horizSizing = "right";
-		vertSizing = "bottom";
-		position = "0 0";
-		extent = "92 46";
-		minExtent = "8 2";
-		enabled = "1";
-		visible = "1";
-		clipToParent = "1";
-
-		new GuiSwatchCtrl("_bg") {
+		new GuiBitmapCtrl() {
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "0 0";
-			extent = "92 46";
+			position = "293 5";
+			extent = "16 16";
 			minExtent = "8 2";
 			enabled = "1";
-			visible = "1";
+			visible = %isMember ? "1" : "0";
 			clipToParent = "1";
-			color = "248 248 248 255";
-		};
-
-		new GuiSwatchCtrl("_indicator") {
-			profile = "GuiDefaultProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "43 30";
-			extent = "48 15";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			color = (%applicantLevel >= %reqLevel ? "76 162 76" : "178 0 0") SPC "255";
-		};
-
-		new GuiBitmapBorderCtrl() {
-			profile = "CMBorderThreeProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "43 30";
-			extent = "49 16";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-		};
-
-		new GuiBitmapBorderCtrl() {
-			profile = "CMBorderThreeProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "0 0";
-			extent = "46 46";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-		};
-
-		new GuiBitmapCtrl("_icon") {
-			profile = "GuiDefaultProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "6 6";
-			extent = "34 34";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			bitmap = "Add-Ons/Client_CityMod/res/gui/skills/" @ (isFile("Add-Ons/Client_CityMod/res/gui/skills/" @ strLwr(%name)) ? %name : "unknown");
+			bitmap = "Add-Ons/Client_CityMod/res/gui/icons/star";
 			wrap = "0";
 			lockAspectRatio = "0";
 			alignLeft = "0";
@@ -465,69 +300,233 @@ function clientcmdCM_Organizations_addApplicationSkill(%name, %description, %req
 			mColor = "255 255 255 255";
 			mMultiply = "0";
 		};
-
-		new GuiTextCtrl("_requiredLevel") {
-			profile = "CMTextTinyBoldProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "51 2";
-			extent = "30 16";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			text = "Lvl" SPC %reqLevel;
-			maxLength = "255";
-		};
-
-		new GuiMLTextCtrl("_applicantLevel") {
-			profile = "CMTextTinyBoldProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "51 16";
-			extent = "30 12";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			lineSpacing = "2";
-			allowColorChars = "0";
-			maxChars = "-1";
-			text = "<color:777777>Lvl" SPC %appLevel;
-			maxBitmapHeight = "-1";
-			selectable = "1";
-			autoResize = "1";
-		};
-		
-		new GuiBitmapButtonCtrl("_button") {
-			profile = "BlankButtonProfile";
-			horizSizing = "right";
-			vertSizing = "bottom";
-			position = "6 6";
-			extent = "34 34";
-			minExtent = "8 2";
-			enabled = "1";
-			visible = "1";
-			clipToParent = "1";
-			command = "CMOrganizationsGui.viewApplicationSkillInfo(" @ %name @ ", " @ %description @ ");";
-			text = " ";
-			groupNum = "-1";
-			buttonType = "PushButton";
-			lockAspectRatio = "0";
-			alignLeft = "0";
-			alignTop = "0";
-			overflowImage = "0";
-			mKeepCached = "0";
-			mColor = "255 255 255 255";
-		};
 	};
 
 	%listGUI.addListGuiObject(%gui);
 
-	%prereqsGui = CMOrganizationsGui_organizationApplication.child("prereqs");
-	%prereqsText = getWord(stripMLControlChars(%prereqsGui.getText()), 2);
-	%meetsReqs = (%applicantLevel >= %reqLevel ? (%prereqsText $= "No" ? "No" : "Yes") : "No");
-	%prereqsGui.setText("<just:center><font:Verdana Bold:14><color:444444>Meets Prerequisites? <font:Verdana:14>" @ %meetsReqs);
+	CMOrganizationsGui_totalOrganizations.setText("<just:center>" @ (firstWord(stripMLControlChars(CMOrganizationsGui_totalOrganizations.getValue())) + 1) SPC "Organizations");
+	CMOrganizationsGui_totalJobs.setText("<just:center>" @ (firstWord(stripMLControlChars(CMOrganizationsGui_totalJobs.getValue())) + %jobs) SPC "Job Opportunities");
+}
+
+function clientcmdCM_Organizations_viewAvailableJobs(%id, %name, %skills) {
+	if(!strLen(%id) || !strLen(%name) || !strLen(%skills)) {
+		return;
+	}
+
+	CMOrganizationsGui_jobs.organizationID = %id;
+	CMOrganizationsGui_jobs.applicantSkills = Stringify::parse(%skills);
+	CMOrganizationsGui_jobs.setText("Available Jobs for" SPC %name);
+	CMOrganizationsGui_jobList.deleteAll();
+
+	CMOrganizationsGui_jobs.setVisible(1);
+}
+
+function clientcmdCM_Organizations_addAvailableJob(%name, %description, %salary, %openings, %autoaccept) {
+	if(!strLen(%name) || !strLen(%description) || !strLen(%salary) || !strLen(%openings) || !strLen(%autoaccept)) {
+		return;
+	}
+
+	%listGUI = CMOrganizationsGui_jobsList;
+
+	%gui = new GuiBitmapBorderCtrl("_job" @ %listGUI.getCount()) {
+		profile = "CMBorderOneProfile";
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = "0 0";
+		extent = "155 52";
+		minExtent = "8 2";
+		enabled = "1";
+		visible = "1";
+		clipToParent = "1";
+		jobName = %name;
+		jobDescription = %description;
+		jobSalary = %salary;
+		jobOpenings = %openings;
+		jobAutoAccept = %autoaccept;
+
+		new GuiSwatchCtrl("_bg") {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "155 52";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			color = "255 255 255 255";
+		};
+
+		new GuiTextCtrl("_name") {
+			profile = "CMTextLargeBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "6 1";
+			extent = "137 20";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = %name;
+			maxLength = "255";
+		};
+
+		new GuiTextCtrl("_openings") {
+			profile = "CMTextTinyProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "61 31";
+			extent = "36 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = %openings;
+			maxLength = "255";
+		};
+
+		new GuiTextCtrl("_salary") {
+			profile = "CMTextTinyProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "44 18";
+			extent = "39 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = "$" @ commaSeparateAmount(%salary);
+			maxLength = "255";
+		};
+
+		new GuiTextCtrl() {
+			profile = "CMTextTinyBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "6 18";
+			extent = "35 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = "Salary:";
+			maxLength = "255";
+		};
+
+		new GuiTextCtrl() {
+			profile = "CMTextTinyBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "6 31";
+			extent = "52 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = "Difficulty:";
+			maxLength = "255";
+		};
+
+		new GuiMouseEventCtrl("CMJobsMouseEventCtrl") {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "155 52";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lockMouse = "0";
+		};
+	};
+
+	%listGUI.addListGuiObject(%gui);
+}
+
+function clientcmdCM_Organizations_addAvailableJobSkill(%skillID, %skillset, %skill) {
+	if(!strLen(%skillID) || !strLen(%skillset) || !strLen(%skill)) {
+		return;
+	}
+
+	%unlocked = CMOrganizationsGui_jobs.applicantSkills.contains(%skillID);
+	%listGUI = CMOrganizationsGui_jobSkillsList;
+
+	%gui = new GuiBitmapBorderCtrl("_skill" @ %listGUI.getCount()) {
+		profile = (%unlocked ? "CMBorderOneProfile" : "CMBorderThreeProfile");
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = "0 0";
+		extent = "267 37";
+		minExtent = "8 2";
+		enabled = "1";
+		visible = "1";
+		clipToParent = "1";
+
+		new GuiSwatchCtrl("_bg") {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "267 37";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			color = (%unlocked ? "255 255 255 255" : "248 248 248 255");
+		};
+
+		new GuiTextCtrl("_skill") {
+			profile = "CMTextLargeBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "5 1";
+			extent = "257 20";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = %skill;
+			maxLength = "255";
+		};
+
+		new GuiTextCtrl("_skillset") {
+			profile = "CMTextTinyProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "5 17";
+			extent = "257 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			text = %skillset;
+			maxLength = "255";
+		};
+
+		new GuiBitmapCtrl("_icon") {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "236 6";
+			extent = "24 24";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			bitmap = "Add-Ons/Client_CityMod/res/gui/icons/" @ (%unlocked ? "checkmark" : "xmark") @ ".png";
+			wrap = "0";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			keepCached = "0";
+			mColor = "255 255 255 255";
+			mMultiply = "0";
+		};
+	};
+
+	%listGUI.addListGuiObject(%gui);
 }
 
 // ============================================================
@@ -535,10 +534,8 @@ function clientcmdCM_Organizations_addApplicationSkill(%name, %description, %req
 // ============================================================
 
 function CMOrganizationsGui::onWake(%this) {
-	CMOrganizationsGui_organizationApplication.selectedJob = "";
-	CMOrganizationsGui_organizationApplication.organizationID = "";
-	CMOrganizationsGui_organizationApplication.confirmedSelection = "";
-	CMOrganizationsGui_organizationApplication.setVisible(0);
+	CMOrganizationsGui_jobs.organizationID = "";
+	CMOrganizationsGui_jobs.setVisible(0);
 	CMOrganizationsGui_organizationCreation.setVisible(0);
 	CMOrganizationsGui_totalOrganizations.setText("<just:center>0 Organizations");
 	CMOrganizationsGui_totalJobs.setText("<just:center>0 Job Opportunities");
@@ -580,7 +577,7 @@ function CMOrganizationsGui::createOrganization(%this) {
 }
 
 function CMOrganizationsGui::filterOrganizations(%this) {
-	%text = CMOrganizationsGui_searchFilter.getValue();
+	%text = CMOrganizationsGui_organizationSearchFilter.getValue();
 	%organizations = 0;
 	%jobs = 0;
 
@@ -604,6 +601,24 @@ function CMOrganizationsGui::filterOrganizations(%this) {
 	CMOrganizationsGui_organizationsList.resizeListGui();
 }
 
+function CMOrganizationsGui::filterJobs(%this) {
+	%text = CMOrganizationsGui_jobsSearchFilter.getValue();
+
+	for(%i = 0; %i < CMOrganizationsGui_jobsList.getCount(); %i++) {
+		%object = CMOrganizationsGui_jobsList.getObject(%i);
+
+		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.child("name").getValue(), %text)) {
+			%object.setVisible(0);
+		} else {
+			if(!%object.isVisible()) {
+				%object.setVisible(1);
+			}
+		}
+	}
+
+	CMOrganizationsGui_jobsList.resizeListGui();
+}
+
 function CMOrganizationsGui::manageOrganization(%this, %id) {
 	commandToServer('CM_Organizations_manageOrganization', %id);
 }
@@ -612,30 +627,20 @@ function CMOrganizationsGui::joinOrganization(%this, %id) {
 	commandToServer('CM_Organizations_joinOrganization', %id);
 }
 
-function CMOrganizationsGui::viewApplicationSkillInfo(%this, %name, %description) {
-	pushCMDialog(
-		"OK",
-		%name @ "\n\n" @ %description
-	);
+function CMOrganizationsGui::showJobInfo(%this, %job) {
+	CMOrganizationsGui_jobInfo.child("name").setText(%job.jobName);
+	CMOrganizationsGui_jobInfo.child("description").setText(%job.jobDescription);
+	CMOrganizationsGui_jobInfo.child("salary").setText("$" @ commaSeparateAmount(%job.jobSalary));
+	CMOrganizationsGui_jobInfo.child("difficulty").setText(%job.jobDifficulty);
+	CMOrganizationsGui_jobInfo.child("autoaccept").setText(%job.jobAutoAccept);
+	CMOrganizationsGui_jobSkillsList.deleteAll();
+
+	CMOrganizationsGui_jobInfo.child("applybutton").command = "CMOrganizationsGui.applyForJob(" @ %job.jobID @ ");";
+	CMOrganizationsGui_jobInfo.setVisible(1);
 }
 
-function CMOrganizationsGui::selectApplicationJob(%this, %id, %name) {
-	CMOrganizationsGui_organizationApplication.selectedJob = %id;
-	CMOrganizationsGui_organizationApplication.child("selectedJob").setText("<font:Verdana Bold:16><color:444444>Selected Job:<font:Verdana:13>" SPC %name);
-}
-
-function CMOrganizationsGui::submitApplication(%this) {
-	if(CMOrganizationsGui_organizationApplication.selectedJob $= "") {
-		pushCMDialog("OK", "You have to select a job for which the application is submitted!");
-		return;
+function CMJobsMouseEventCtrl::onMouseDown(%this, %modifierKey, %mousePoint, %mouseClickCount) {
+	if(isObject(%job = %this.parent())) {
+		CMOrganizationsGui.showJobInfo(%job);
 	}
-
-	if((getWord(stripMLControlChars(CMOrganizationsGui_organizationApplication.child("prereqs")), 2) !$= "Yes") && !CMOrganizationsGui_organizationApplication.confirmedSelection) {
-		pushCMDialog("OK", "You do not meet the skill prerequisites for this job, and, as a result, may have a greater chance of not being accepted.  You may wish to review your job choice before applying.  However, if you still wish to submit the application, close this dialog and press the 'Submit Application' button again.");
-		CMOrganizationsGui_organizationApplication.confirmedSelection = true;
-		return;
-	}
-
-	commandToServer('CM_Organizations_sendApplication', CMOrganizationsGui_organizationApplication.organizationID, CMOrganizationsGui_organizationApplication.selectedJob);
-	CMOrganizationsGui_organizationApplication.setVisible(0);
 }

@@ -491,28 +491,6 @@ function CMSkillsGui::onWake(%this) {
 	commandToServer('CM_Skills_requestSkillsets');
 }
 
-function CMSkillsMouseEventCtrl::onMouseDown(%this, %modifierKey, %mousePoint, %mouseClickCount) {
-	//echo("[onMouseDown]" NL "This" SPC %this NL "ModifierKey" SPC %modifierKey NL "MousePoint" SPC %mousePoint NL "MouseClickCount" SPC %mouseClickCount);
-	if((%modifierKey == 16) || (%modifierKey == 32)) {
-		CMSkillsGui.toggleSkillPanelLock();
-	} else {
-		if(isObject(%skill = %this.parent())) {
-			CMSkillsGui.unlockSkillFrontend(%skill);
-		}
-	}
-}
-
-function CMSkillsMouseEventCtrl::onMouseEnter(%this, %modifierKey, %mousePoint, %mouseClickCount) {
-	//echo("[onMouseLeave]" NL "This" SPC %this NL "ModifierKey" SPC %modifierKey NL "MousePoint" SPC %mousePoint NL "MouseClickCount" SPC %mouseClickCount);
-	CMSkillsGui.showSkillInPanel(%this.parent());
-}
-
-function CMSkillsMouseEventCtrl::onMouseLeave(%this, %modifierKey, %mousePoint, %mouseClickCount) {
-	//echo("[onMouseLeave]" NL "This" SPC %this NL "ModifierKey" SPC %modifierKey NL "MousePoint" SPC %mousePoint NL "MouseClickCount" SPC %mouseClickCount);
-	CMSkillsGui_skillsPanel.hiding = true;
-	CMSkillsGui.schedule(150, "hideSkillPanel");
-}
-
 function CMSkillsGui::unlockSkillFrontend(%this, %skill) {
 	if(%skill.skillUnlocked) {
 		pushCMDialog("OK", "You have already unlocked this skill!");
@@ -622,4 +600,23 @@ function CMSkillsGui::hideSkillPanel(%this) {
 
 	CMSkillsGui_skillsPanel.hiding = false;
 	CMSkillsGui_skillsPanel.setVisible(0);
+}
+
+function CMSkillsMouseEventCtrl::onMouseDown(%this, %modifierKey, %mousePoint, %mouseClickCount) {
+	if((%modifierKey == 16) || (%modifierKey == 32)) {
+		CMSkillsGui.toggleSkillPanelLock();
+	} else {
+		if(isObject(%skill = %this.parent())) {
+			CMSkillsGui.unlockSkillFrontend(%skill);
+		}
+	}
+}
+
+function CMSkillsMouseEventCtrl::onMouseEnter(%this, %modifierKey, %mousePoint, %mouseClickCount) {
+	CMSkillsGui.showSkillInPanel(%this.parent());
+}
+
+function CMSkillsMouseEventCtrl::onMouseLeave(%this, %modifierKey, %mousePoint, %mouseClickCount) {
+	CMSkillsGui_skillsPanel.hiding = true;
+	CMSkillsGui.schedule(150, "hideSkillPanel");
 }

@@ -328,7 +328,7 @@ function CityModClientHUDInventories::switchCursor(%this, %img) {
 	canvas.setCursor(DefaultCursor);
 }
 
-function CityModClientHUDInventories::dropItem(%this) {
+function CityModClientHUDInventories::dropItem(%this, %all) {
 	if(!isObject(%this.pickedUpItem)) {
 		return;
 	}
@@ -387,25 +387,6 @@ function CityModClientHUDInventories::splitItem(%this) {
 	}
 
 	commandToServer('CM_Inventory_splitItem', %itemsplitter.item["inventory"], getWord(%itemsplitter.item["slot"], 0), getWord(%itemsplitter.item["slot"], 1), %itemsplitter.count["new"]);
-
-	%icon = %itemsplitter.child("slot").getObject(0).getObject(0);
-	%text = %icon.getObject(1);
-	%countbg = %icon.getObject(2);
-	%counttext = %countbg.getObject(0);
-
-	%icon.setBitmap("");
-	%text.setText("");
-
-	%counttext.setText("");
-	%countbg.setVisible(0);
-
-	%itemsplitter.count["total"] = "";
-	%itemsplitter.count["new"] = "";
-	%itemsplitter.item = "";
-	%itemsplitter.item["count"] = "";
-	%itemsplitter.item["slot"] = "";
-	%itemsplitter.item["inventory"] = "";
-
 	%this.deleteItemSplitter();
 }
 
@@ -600,7 +581,7 @@ function CityModClientHUDInventories::addItemSplitter(%this) {
 						enabled = "1";
 						visible = "1";
 						clipToParent = "1";
-						command = "CMClient_HUD.inventories.setSplitSlot();";
+						command = "if(isObject(CMClient_HUD.inventories.pickedUpItem)) { CMClient_HUD.inventories.setSplitSlot(); } else { CMClient_HUD.inventories.deleteItemSplitter(); }";
 						text = "";
 						groupNum = "-1";
 						buttonType = "PushButton";
@@ -652,6 +633,24 @@ function CityModClientHUDInventories::deleteItemSplitter(%this) {
 	if(!isObject(%itemsplitter = %this.gui.child("itemsplitter"))) {
 		return;
 	}
+
+	%icon = %itemsplitter.child("slot").getObject(0).getObject(0);
+	%text = %icon.getObject(1);
+	%countbg = %icon.getObject(2);
+	%counttext = %countbg.getObject(0);
+
+	%icon.setBitmap("");
+	%text.setText("");
+
+	%counttext.setText("");
+	%countbg.setVisible(0);
+
+	%itemsplitter.count["total"] = "";
+	%itemsplitter.count["new"] = "";
+	%itemsplitter.item = "";
+	%itemsplitter.item["count"] = "";
+	%itemsplitter.item["slot"] = "";
+	%itemsplitter.item["inventory"] = "";
 
 	%itemsplitter.delete();
 }
@@ -995,6 +994,14 @@ function CityModClientHUDInventory::clickButton(%this, %x, %y) {
 
 	if(isObject(CMClient_HUD.inventories.pickedUpItem)) { // Placing down picked up Item
 		if(isObject(%slot.item)) { // Placing down Item in occupied slot (Swapping)
+			if(isObject(CMClient_HUD.gui["inventories"].child("itemsplitter"))) {
+				CMClient_HUD.inventories.deleteItemSplitter();
+			}
+
+			if((%slot.count !$= "") && (%slot.count > 1)) {
+				CMClient_HUD.inventories.addItemSplitter();
+			}
+
 			if(CMClient_HUD.inventories.pickedUpItemInventory $= %this.inventoryID) { // Same inventory, no transfer required
 				commandToServer('CM_Inventory_swapItem',
 					%this.inventoryID,
@@ -1016,7 +1023,9 @@ function CityModClientHUDInventory::clickButton(%this, %x, %y) {
 
 			%this.swapItemWithSlot(%x, %y);
 		} else { // Placing down Item in unoccupied slot (Moving)
-			CMClient_HUD.inventories.deleteItemSplitter();
+			if(isObject(CMClient_HUD.gui["inventories"].child("itemsplitter"))) {
+				CMClient_HUD.inventories.deleteItemSplitter();
+			}
 
 			if(CMClient_HUD.inventories.pickedUpItemInventory $= %this.inventoryID) { // Same inventory, no transfer required
 				if(CMClient_HUD.inventories.pickedUpItemSlot !$= (%x SPC %y)) {
@@ -1043,6 +1052,10 @@ function CityModClientHUDInventory::clickButton(%this, %x, %y) {
 		}
 	} else { // Picking up Item
 		if(isObject(%slot.item)) {
+			if(isObject(CMClient_HUD.gui["inventories"].child("itemsplitter"))) {
+				CMClient_HUD.inventories.deleteItemSplitter();
+			}
+
 			if((%slot.count !$= "") && (%slot.count > 1)) {
 				CMClient_HUD.inventories.addItemSplitter();
 			}

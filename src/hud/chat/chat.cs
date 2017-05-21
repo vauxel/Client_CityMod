@@ -40,6 +40,7 @@ function CityModClientHUDChat::sendMessage(%this) {
 
 	commandToServer('messagesent', stripTrailingSpaces(stripMLControlChars(%message)));
 	%input.setValue("");
+	%this.focusChat(false);
 }
 
 function CityModClientHUDChat::addChatMessage(%this, %name, %prefix, %suffix, %message) {

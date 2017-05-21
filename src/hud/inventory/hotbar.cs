@@ -193,7 +193,7 @@ function CityModClientHUDHotbar::isSlotOccupied(%this, %pos) {
 		return -1;
 	}
 
-	// Quick and fast fix, although it may not be the proper way to find if the slot is occupied
+	// Quick and fast fix, although it may not be the "proper" way to find if the slot is occupied
 	return %this.slot[%pos].getObject(0).getObject(0).bitmap !$= "";
 }
 
