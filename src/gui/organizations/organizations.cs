@@ -321,8 +321,8 @@ function clientcmdCM_Organizations_viewAvailableJobs(%id, %name, %skills) {
 	CMOrganizationsGui_jobs.setVisible(1);
 }
 
-function clientcmdCM_Organizations_addAvailableJob(%name, %description, %salary, %openings, %autoaccept) {
-	if(!strLen(%name) || !strLen(%description) || !strLen(%salary) || !strLen(%openings) || !strLen(%autoaccept)) {
+function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %openings, %autoaccept) {
+	if(!strLen(%name) || !strLen(%description) || !strLen(%pay) || !strLen(%openings) || !strLen(%autoaccept)) {
 		return;
 	}
 
@@ -340,7 +340,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %salary,
 		clipToParent = "1";
 		jobName = %name;
 		jobDescription = %description;
-		jobSalary = %salary;
+		jobPay = %pay;
 		jobOpenings = %openings;
 		jobAutoAccept = %autoaccept;
 
@@ -385,7 +385,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %salary,
 			maxLength = "255";
 		};
 
-		new GuiTextCtrl("_salary") {
+		new GuiTextCtrl("_pay") {
 			profile = "CMTextTinyProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
@@ -395,7 +395,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %salary,
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			text = "$" @ commaSeparateAmount(%salary);
+			text = "$" @ commaSeparateAmount(%pay);
 			maxLength = "255";
 		};
 
@@ -409,7 +409,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %salary,
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			text = "Salary:";
+			text = "Pay:";
 			maxLength = "255";
 		};
 
@@ -630,7 +630,7 @@ function CMOrganizationsGui::joinOrganization(%this, %id) {
 function CMOrganizationsGui::showJobInfo(%this, %job) {
 	CMOrganizationsGui_jobInfo.child("name").setText(%job.jobName);
 	CMOrganizationsGui_jobInfo.child("description").setText(%job.jobDescription);
-	CMOrganizationsGui_jobInfo.child("salary").setText("$" @ commaSeparateAmount(%job.jobSalary));
+	CMOrganizationsGui_jobInfo.child("pay").setText("$" @ commaSeparateAmount(%job.jobPay));
 	CMOrganizationsGui_jobInfo.child("difficulty").setText(%job.jobDifficulty);
 	CMOrganizationsGui_jobInfo.child("autoaccept").setText(%job.jobAutoAccept);
 	CMOrganizationsGui_jobSkillsList.deleteAll();

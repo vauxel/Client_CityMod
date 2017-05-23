@@ -511,7 +511,7 @@ new GuiControl(CMOrganizationManagerGui) {
                selectable = "1";
                autoResize = "1";
             };
-            new GuiMLTextCtrl(_avgsalary) {
+            new GuiMLTextCtrl(_avgpay) {
                profile = "CMTextMediumBoldProfile";
                horizSizing = "right";
                vertSizing = "bottom";
@@ -524,7 +524,7 @@ new GuiControl(CMOrganizationManagerGui) {
                lineSpacing = "2";
                allowColorChars = "0";
                maxChars = "-1";
-               text = "Average Salary: <font:Verdana:13>$0";
+               text = "Average Pay: <font:Verdana:13>$0";
                maxBitmapHeight = "-1";
                selectable = "1";
                autoResize = "1";
@@ -627,7 +627,7 @@ new GuiControl(CMOrganizationManagerGui) {
                selectable = "1";
                autoResize = "1";
             };
-            new GuiMLTextCtrl(_salary) {
+            new GuiMLTextCtrl(_pay) {
                profile = "CMTextMediumBoldProfile";
                horizSizing = "right";
                vertSizing = "bottom";
@@ -640,7 +640,7 @@ new GuiControl(CMOrganizationManagerGui) {
                lineSpacing = "2";
                allowColorChars = "0";
                maxChars = "-1";
-               text = "Current Salary: <font:Verdana:13>$0";
+               text = "Current Pay: <font:Verdana:13>$0";
                maxBitmapHeight = "-1";
                selectable = "1";
                autoResize = "1";
@@ -1631,23 +1631,18 @@ new GuiControl(CMOrganizationManagerGui) {
                   color = "255 255 255 255";
                };
             };
-            new GuiMLTextCtrl(CMOrganizationManagerGui_applicationsCount) {
+            new GuiTextCtrl(CMOrganizationManagerGui_applicationsCount) {
                profile = "CMTextSmallBoldProfile";
                horizSizing = "right";
                vertSizing = "bottom";
-               position = "3 303";
-               extent = "391 13";
+               position = "3 301";
+               extent = "136 17";
                minExtent = "8 2";
                enabled = "1";
                visible = "1";
                clipToParent = "1";
-               lineSpacing = "2";
-               allowColorChars = "0";
-               maxChars = "-1";
                text = "Pending Applications";
-               maxBitmapHeight = "-1";
-               selectable = "1";
-               autoResize = "1";
+               maxLength = "255";
             };
          };
       };
@@ -2522,7 +2517,7 @@ new GuiControl(CMOrganizationManagerGui) {
             lineSpacing = "2";
             allowColorChars = "0";
             maxChars = "-1";
-            text = "<just:center>Salary";
+            text = "<just:center>Pay";
             maxBitmapHeight = "-1";
             selectable = "1";
             autoResize = "1";
@@ -2551,7 +2546,7 @@ new GuiControl(CMOrganizationManagerGui) {
             clipToParent = "1";
             color = "255 255 255 255";
          };
-         new GuiTextEditCtrl(CMOrganizationManagerGui_jobModificationSalary) {
+         new GuiTextEditCtrl(CMOrganizationManagerGui_jobModificationPay) {
             profile = "CMTextEditProfile";
             horizSizing = "right";
             vertSizing = "center";
@@ -2561,7 +2556,7 @@ new GuiControl(CMOrganizationManagerGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            command = "CMOrganizationManagerGui_jobModificationSalary.setText(mClamp(stripChars(CMOrganizationManagerGui_jobModificationSalary.getValue(), stripChars(CMOrganizationManagerGui_jobModificationSalary.getValue(), \"0123456789\")), 0, 1000));";
+            command = "CMOrganizationManagerGui_jobModificationPay.setText(mClamp(stripChars(CMOrganizationManagerGui_jobModificationPay.getValue(), stripChars(CMOrganizationManagerGui_jobModificationPay.getValue(), \"0123456789\")), 0, 1000));";
             text = "0";
             maxLength = "255";
             historySize = "0";
@@ -2880,7 +2875,7 @@ new GuiControl(CMOrganizationManagerGui) {
          mColor = "255 255 255 255";
          mMultiply = "0";
       };
-      new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobSkillsEdit) {
+      new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobSkillsEditButton) {
          profile = "CMButtonProfile";
          horizSizing = "right";
          vertSizing = "bottom";
@@ -2890,7 +2885,7 @@ new GuiControl(CMOrganizationManagerGui) {
          enabled = "1";
          visible = "1";
          clipToParent = "1";
-         command = "CMOrganizationManagerGui.confirmJobModification();";
+         command = "CMOrganizationManagerGui.editJobSkills(-1);";
          text = "Edit Prereq. Skills";
          groupNum = "-1";
          buttonType = "PushButton";
@@ -2902,7 +2897,7 @@ new GuiControl(CMOrganizationManagerGui) {
          mKeepCached = "0";
          mColor = "240 240 240 255";
       };
-      new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobTasksEdit) {
+      new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobTasksEditButton) {
          profile = "CMButtonProfile";
          horizSizing = "right";
          vertSizing = "bottom";
@@ -2912,7 +2907,7 @@ new GuiControl(CMOrganizationManagerGui) {
          enabled = "1";
          visible = "1";
          clipToParent = "1";
-         command = "CMOrganizationManagerGui.confirmJobModification();";
+         command = "CMOrganizationManagerGui.editJobTasks(-1);";
          text = "Edit Tasks";
          groupNum = "-1";
          buttonType = "PushButton";
@@ -2923,6 +2918,44 @@ new GuiControl(CMOrganizationManagerGui) {
          overflowImage = "0";
          mKeepCached = "0";
          mColor = "240 240 240 255";
+      };
+      new GuiMLTextCtrl(CMOrganizationManagerGui_jobEditRestrictedText) {
+         profile = "CMTextSmallBoldProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "47 251";
+         extent = "200 13";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "0";
+         clipToParent = "1";
+         lineSpacing = "2";
+         allowColorChars = "0";
+         maxChars = "-1";
+         text = "<just:center>Not available for job creation";
+         maxBitmapHeight = "-1";
+         selectable = "1";
+         autoResize = "1";
+      };
+      new GuiBitmapCtrl() {
+         profile = "GuiDefaultProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "0 276";
+         extent = "294 6";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+         bitmap = "~/Client_CityMod/res/ui/dividerHorizontal";
+         wrap = "0";
+         lockAspectRatio = "0";
+         alignLeft = "0";
+         alignTop = "0";
+         overflowImage = "0";
+         keepCached = "0";
+         mColor = "255 255 255 255";
+         mMultiply = "0";
       };
       new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobModificationConfirmation) {
          profile = "CMButtonColoredProfile";
@@ -2946,33 +2979,13 @@ new GuiControl(CMOrganizationManagerGui) {
          mKeepCached = "0";
          mColor = "77 165 255 255";
       };
-      new GuiBitmapCtrl() {
-         profile = "GuiDefaultProfile";
-         horizSizing = "right";
-         vertSizing = "bottom";
-         position = "0 276";
-         extent = "294 6";
-         minExtent = "8 2";
-         enabled = "1";
-         visible = "1";
-         clipToParent = "1";
-         bitmap = "~/Client_CityMod/res/ui/dividerHorizontal";
-         wrap = "0";
-         lockAspectRatio = "0";
-         alignLeft = "0";
-         alignTop = "0";
-         overflowImage = "0";
-         keepCached = "0";
-         mColor = "255 255 255 255";
-         mMultiply = "0";
-      };
    };
    new GuiWindowCtrl(CMOrganizationManagerGui_jobSkillRequirementsWindow) {
       profile = "CMWindowProfile";
       horizSizing = "center";
       vertSizing = "center";
-      position = "355 214";
-      extent = "313 340";
+      position = "355 231";
+      extent = "313 305";
       minExtent = "8 2";
       enabled = "1";
       visible = "0";
@@ -3090,8 +3103,8 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "bottom";
             position = "148 0";
-            extent = "8 20";
-            minExtent = "8 2";
+            extent = "6 20";
+            minExtent = "6 2";
             enabled = "1";
             visible = "1";
             clipToParent = "1";
@@ -3260,40 +3273,18 @@ new GuiControl(CMOrganizationManagerGui) {
                listSpacing = "2";
          };
       };
-      new GuiBitmapButtonCtrl() {
-         profile = "CMButtonColoredProfile";
-         horizSizing = "right";
-         vertSizing = "bottom";
-         position = "53 304";
-         extent = "207 32";
-         minExtent = "8 2";
-         enabled = "1";
-         visible = "1";
-         clipToParent = "1";
-         command = "CMOrganizationManagerGui_jobSkillRequirementsWindow.setVisible(0);";
-         text = "Done";
-         groupNum = "-1";
-         buttonType = "PushButton";
-         bitmap = "~/Client_CityMod/res/ui/button_wide/button";
-         lockAspectRatio = "0";
-         alignLeft = "0";
-         alignTop = "0";
-         overflowImage = "0";
-         mKeepCached = "0";
-         mColor = "77 165 255 255";
-      };
    };
-   new GuiWindowCtrl(CMOrganizationManagerGui_applicantSkillsWindow) {
+   new GuiWindowCtrl(CMOrganizationManagerGui_jobTasksWindow) {
       profile = "CMWindowProfile";
       horizSizing = "center";
       vertSizing = "center";
-      position = "310 243";
-      extent = "403 282";
+      position = "237 231";
+      extent = "550 305";
       minExtent = "8 2";
       enabled = "1";
       visible = "0";
       clipToParent = "1";
-      text = "Applicant Vaux\'s Skills";
+      text = "Edit Job #1\'s Tasks";
       maxLength = "255";
       resizeWidth = "0";
       resizeHeight = "0";
@@ -3302,14 +3293,14 @@ new GuiControl(CMOrganizationManagerGui) {
       canMinimize = "0";
       canMaximize = "0";
       minSize = "50 50";
-      closeCommand = "CMOrganizationManagerGui_applicantSkillsWindow.setVisible(0);";
+      closeCommand = "CMOrganizationManagerGui_jobTasksWindow.setVisible(0);";
 
       new GuiBitmapBorderCtrl() {
          profile = "CMBorderOneProfile";
          horizSizing = "right";
          vertSizing = "bottom";
-         position = "315 32";
-         extent = "82 245";
+         position = "5 32";
+         extent = "540 20";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3320,115 +3311,114 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "relative";
             vertSizing = "relative";
             position = "0 0";
-            extent = "82 245";
+            extent = "540 20";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
             clipToParent = "1";
             color = "255 255 255 255";
-
-            new GuiBitmapBorderCtrl() {
-               profile = "CMBorderOneProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "0 111";
-               extent = "82 16";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-            };
-            new GuiBitmapBorderCtrl() {
-               profile = "CMBorderOneProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "0 52";
-               extent = "82 16";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-            };
-            new GuiMLTextCtrl() {
-               profile = "CMTextTinyBoldProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "4 1";
-               extent = "78 48";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-               lineSpacing = "2";
-               allowColorChars = "0";
-               maxChars = "-1";
-               text = "Meets Prerequisite Skill Requirements?";
-               maxBitmapHeight = "-1";
-               selectable = "1";
-               autoResize = "1";
-            };
-            new GuiMLTextCtrl(CMOrganizationManagerGui_applicantSkillsMeetsRequirementsText) {
-               profile = "CMTextMediumProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "4 52";
-               extent = "80 14";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-               lineSpacing = "2";
-               allowColorChars = "0";
-               maxChars = "-1";
-               text = "N/A";
-               maxBitmapHeight = "-1";
-               selectable = "1";
-               autoResize = "1";
-            };
-            new GuiMLTextCtrl() {
-               profile = "CMTextTinyBoldProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "4 72";
-               extent = "80 36";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-               lineSpacing = "2";
-               allowColorChars = "0";
-               maxChars = "-1";
-               text = "Skill Requirements Met:";
-               maxBitmapHeight = "-1";
-               selectable = "1";
-               autoResize = "1";
-            };
-            new GuiMLTextCtrl(CMOrganizationManagerGui_applicantSkillsRequirementsAmountText) {
-               profile = "CMTextMediumProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "4 111";
-               extent = "80 14";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-               lineSpacing = "2";
-               allowColorChars = "0";
-               maxChars = "-1";
-               text = "0/0";
-               maxBitmapHeight = "-1";
-               selectable = "1";
-               autoResize = "1";
-            };
+         };
+         new GuiMLTextCtrl() {
+            profile = "CMTextSmallBoldProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "4 3";
+            extent = "329 13";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            lineSpacing = "2";
+            allowColorChars = "0";
+            maxChars = "-1";
+            text = "All Tasks";
+            maxBitmapHeight = "-1";
+            selectable = "1";
+            autoResize = "1";
+         };
+         new GuiMLTextCtrl(CMOrganizationManagerGui_jobTasksTotal1) {
+            profile = "CMTextSmallBoldProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "4 3";
+            extent = "331 13";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            lineSpacing = "2";
+            allowColorChars = "0";
+            maxChars = "-1";
+            text = "<just:right><color:777777>0";
+            maxBitmapHeight = "-1";
+            selectable = "1";
+            autoResize = "1";
+               totalCount = "0";
+         };
+         new GuiMLTextCtrl() {
+            profile = "CMTextSmallBoldProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "344 3";
+            extent = "192 13";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            lineSpacing = "2";
+            allowColorChars = "0";
+            maxChars = "-1";
+            text = "<just:right>Job Tasks";
+            maxBitmapHeight = "-1";
+            selectable = "1";
+            autoResize = "1";
+         };
+         new GuiMLTextCtrl(CMOrganizationManagerGui_jobTasksTotal2) {
+            profile = "CMTextSmallBoldProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "342 3";
+            extent = "194 13";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            lineSpacing = "2";
+            allowColorChars = "0";
+            maxChars = "-1";
+            text = "<color:777777>0";
+            maxBitmapHeight = "-1";
+            selectable = "1";
+            autoResize = "1";
+               totalCount = "0";
+         };
+         new GuiBitmapCtrl() {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "335 0";
+            extent = "6 20";
+            minExtent = "6 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            bitmap = "~/Client_CityMod/res/ui/dividerVertical";
+            wrap = "0";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            keepCached = "0";
+            mColor = "255 255 255 255";
+            mMultiply = "0";
          };
       };
       new GuiBitmapBorderCtrl() {
          profile = "CMBorderOneProfile";
          horizSizing = "right";
          vertSizing = "bottom";
-         position = "5 32";
-         extent = "308 245";
+         position = "5 55";
+         extent = "337 210";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3439,44 +3429,208 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "relative";
             vertSizing = "relative";
             position = "0 0";
-            extent = "308 245";
+            extent = "337 210";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
             clipToParent = "1";
             color = "255 255 255 255";
          };
-         new GuiScrollCtrl(CMOrganizationManagerGui_applicantSkillsScroll) {
-            profile = "CMScrollProfile";
+      };
+      new GuiScrollCtrl(CMOrganizationManagerGui_jobTasksScroll1) {
+         profile = "CMScrollProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "8 58";
+         extent = "331 204";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+         willFirstRespond = "0";
+         hScrollBar = "alwaysOff";
+         vScrollBar = "alwaysOn";
+         constantThumbHeight = "0";
+         childMargin = "0 0";
+         rowHeight = "40";
+         columnWidth = "30";
+
+         new GuiSwatchCtrl(CMOrganizationManagerGui_jobTasksList1) {
+            profile = "GuiDefaultProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "2 3";
-            extent = "302 239";
+            position = "1 1";
+            extent = "331 59";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            willFirstRespond = "0";
-            hScrollBar = "alwaysOff";
-            vScrollBar = "alwaysOn";
-            constantThumbHeight = "0";
-            childMargin = "0 0";
-            rowHeight = "40";
-            columnWidth = "30";
+            color = "0 0 0 0";
+               listSpacing = "2";
+         };
+      };
+      new GuiBitmapBorderCtrl() {
+         profile = "CMBorderTwoProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "5 268";
+         extent = "137 32";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
 
-            new GuiSwatchCtrl(CMOrganizationManagerGui_applicantSkillsList) {
-               profile = "GuiDefaultProfile";
-               horizSizing = "right";
-               vertSizing = "bottom";
-               position = "1 1";
-               extent = "301 237";
-               minExtent = "8 2";
-               enabled = "1";
-               visible = "1";
-               clipToParent = "1";
-               color = "0 78 80 2";
-                  listSpacing = "3";
-            };
+         new GuiSwatchCtrl() {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "0 0";
+            extent = "137 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            color = "255 255 255 255";
+         };
+         new GuiTextEditCtrl(CMOrganizationManagerGui_jobTasksFilter) {
+            profile = "CMTextEditProfile";
+            horizSizing = "right";
+            vertSizing = "center";
+            position = "4 7";
+            extent = "129 17";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            command = "CMOrganizationManagerGui.filterTasks();";
+            text = "Search Filter";
+            maxLength = "255";
+            historySize = "0";
+            password = "0";
+            tabComplete = "0";
+            sinkAllKeyEvents = "0";
+         };
+      };
+      new GuiBitmapBorderCtrl() {
+         profile = "CMBorderThreeProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "145 268";
+         extent = "197 32";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+
+         new GuiSwatchCtrl() {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "0 0";
+            extent = "197 32";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            color = "248 248 248 255";
+         };
+         new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobTasksType1) {
+            profile = "CMButtonSmallProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "7 4";
+            extent = "90 23";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            text = "Salary";
+            groupNum = "2";
+            buttonType = "RadioButton";
+            bitmap = "~/Client_CityMod/res/ui/button_regular/button";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            mKeepCached = "0";
+            mColor = "240 240 240 255";
+         };
+         new GuiBitmapButtonCtrl(CMOrganizationManagerGui_jobTasksType2) {
+            profile = "CMButtonSmallProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "100 4";
+            extent = "90 23";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            text = "Commision";
+            groupNum = "2";
+            buttonType = "RadioButton";
+            bitmap = "~/Client_CityMod/res/ui/button_regular/button";
+            lockAspectRatio = "0";
+            alignLeft = "0";
+            alignTop = "0";
+            overflowImage = "0";
+            mKeepCached = "0";
+            mColor = "240 240 240 255";
+         };
+      };
+      new GuiBitmapBorderCtrl() {
+         profile = "CMBorderOneProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "345 55";
+         extent = "200 245";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+
+         new GuiSwatchCtrl() {
+            profile = "GuiDefaultProfile";
+            horizSizing = "relative";
+            vertSizing = "relative";
+            position = "0 0";
+            extent = "200 245";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            color = "255 255 255 255";
+         };
+      };
+      new GuiScrollCtrl(CMOrganizationManagerGui_jobTasksScroll2) {
+         profile = "CMScrollProfile";
+         horizSizing = "right";
+         vertSizing = "bottom";
+         position = "348 58";
+         extent = "194 239";
+         minExtent = "8 2";
+         enabled = "1";
+         visible = "1";
+         clipToParent = "1";
+         willFirstRespond = "0";
+         hScrollBar = "alwaysOff";
+         vScrollBar = "alwaysOn";
+         constantThumbHeight = "0";
+         childMargin = "0 0";
+         rowHeight = "40";
+         columnWidth = "30";
+
+         new GuiSwatchCtrl(CMOrganizationManagerGui_jobTasksList2) {
+            profile = "GuiDefaultProfile";
+            horizSizing = "right";
+            vertSizing = "bottom";
+            position = "1 1";
+            extent = "194 42";
+            minExtent = "8 2";
+            enabled = "1";
+            visible = "1";
+            clipToParent = "1";
+            color = "0 0 0 0";
+               listSpacing = "2";
          };
       };
    };

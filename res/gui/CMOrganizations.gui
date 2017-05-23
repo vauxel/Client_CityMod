@@ -545,7 +545,7 @@ new GuiControl(CMOrganizationsGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "Salary:";
+            text = "Pay:";
             maxLength = "255";
          };
          new GuiTextCtrl() {
@@ -654,7 +654,7 @@ new GuiControl(CMOrganizationsGui) {
                color = "248 248 248 255";
             };
          };
-         new GuiTextCtrl(_salary) {
+         new GuiTextCtrl(_pay) {
             profile = "CMTextSmallProfile";
             horizSizing = "right";
             vertSizing = "bottom";

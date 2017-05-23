@@ -101,8 +101,8 @@ function clientcmdCM_Organizations_setUserPrivilegeLevel(%level) {
 	}
 }
 
-function clientcmdCM_Organizations_setOverviewInfo(%name, %founded, %founder, %owner, %members, %jobs, %openings, %avgsalary, %hired, %job, %salary, %infractions) {
-	if(!strLen(%name) || !strLen(%founded) || !strLen(%founder) || !strLen(%owner) || !strLen(%members) || !strLen(%jobs) || !strLen(%openings) || !strLen(%avgsalary)) {
+function clientcmdCM_Organizations_setOverviewInfo(%name, %founded, %founder, %owner, %members, %jobs, %openings, %avgpay, %hired, %job, %pay, %infractions) {
+	if(!strLen(%name) || !strLen(%founded) || !strLen(%founder) || !strLen(%owner) || !strLen(%members) || !strLen(%jobs) || !strLen(%openings) || !strLen(%avgpay)) {
 		return;
 	}
 
@@ -113,12 +113,12 @@ function clientcmdCM_Organizations_setOverviewInfo(%name, %founded, %founder, %o
 	CMOrganizationManagerGui_overviewPanel.child("statistics").child("members").setText("Members: <font:Verdana:13>" @ %members);
 	CMOrganizationManagerGui_overviewPanel.child("statistics").child("jobs").setText("Jobs: <font:Verdana:13>" @ %jobs);
 	CMOrganizationManagerGui_overviewPanel.child("statistics").child("openings").setText("Job Openings: <font:Verdana:13>" @ %openings);
-	CMOrganizationManagerGui_overviewPanel.child("statistics").child("avgsalary").setText("Average Salary: <font:Verdana:13>" @ %avgsalary);
+	CMOrganizationManagerGui_overviewPanel.child("statistics").child("avgpay").setText("Average Pay: <font:Verdana:13>" @ %avgpay);
 
-	if(strLen(%hired) && strLen(%job) && strLen(%salary) && strLen(%infractions)) {
+	if(strLen(%hired) && strLen(%job) && strLen(%pay) && strLen(%infractions)) {
 		CMOrganizationManagerGui_overviewPanel.child("details").child("hired").setText("Hired On / Member Since: <font:Verdana:13>" @ %hired);
 		CMOrganizationManagerGui_overviewPanel.child("details").child("job").setText("Current Job: <font:Verdana:13>" @ %job);
-		CMOrganizationManagerGui_overviewPanel.child("details").child("salary").setText("Current Salary: <font:Verdana:13>" @ %salary);
+		CMOrganizationManagerGui_overviewPanel.child("details").child("pay").setText("Current Pay: <font:Verdana:13>" @ %pay);
 		CMOrganizationManagerGui_overviewPanel.child("details").child("infractions").setText("Infractions: <font:Verdana:13>" @ %infractions);
 	}
 }
@@ -406,24 +406,24 @@ function clientcmdCM_Organizations_deleteOrganizationMember(%bl_id) {
 	}
 }
 
-function clientcmdCM_Organizations_setJobConstraints(%desclength, %salaryamount) {
-	if(!strLen(%desclength) || !strLen(%salaryamount)) {
+function clientcmdCM_Organizations_setJobConstraints(%desclength, %payamount) {
+	if(!strLen(%desclength) || !strLen(%payamount)) {
 		return;
 	}
 
 	CMOrganizationManagerGui_jobModificationDescription.maxChars = %desclength;
 	CMOrganizationManagerGui_jobModificationDescriptionMax.setText("Max Length:" SPC %desclength);
-	CMOrganizationManagerGui_jobModificationSalary.command = "CMOrganizationManagerGui_jobModificationSalary.setText(mClamp(stripChars(CMOrganizationManagerGui_jobModificationSalary.getValue(), stripChars(CMOrganizationManagerGui_jobModificationSalary.getValue(), \"0123456789\")), 0, " @ %salaryamount @ "));";
+	CMOrganizationManagerGui_jobModificationPay.command = "CMOrganizationManagerGui_jobModificationPay.setText(mClamp(stripChars(CMOrganizationManagerGui_jobModificationPay.getValue(), stripChars(CMOrganizationManagerGui_jobModificationPay.getValue(), \"0123456789\")), 0, " @ %payamount @ "));";
 }
 
-function clientcmdCM_Organizations_setJobModification(%name, %description, %salary, %openings, %autoaccept) {
-	if(!strLen(%name) || !strLen(%description) || !strLen(%salary) || !strLen(%openings) || !strLen(%autoaccept)) {
+function clientcmdCM_Organizations_setJobModification(%name, %description, %pay, %openings, %autoaccept) {
+	if(!strLen(%name) || !strLen(%description) || !strLen(%pay) || !strLen(%openings) || !strLen(%autoaccept)) {
 		return;
 	}
 
 	CMOrganizationManagerGui_jobModificationName.setText(%name);
 	CMOrganizationManagerGui_jobModificationDescription.setText(%description);
-	CMOrganizationManagerGui_jobModificationSalary.setText(%salary);
+	CMOrganizationManagerGui_jobModificationPay.setText(%pay);
 	CMOrganizationManagerGui_jobModificationOpenings.setText(pad(%openings, 4));
 
 	if(%autoaccept == true) {
@@ -436,7 +436,7 @@ function clientcmdCM_Organizations_setJobModification(%name, %description, %sala
 }
 
 function clientcmdCM_Organizations_closeJobModification() {
-	CMOrganizationManagerGui_applicantSkillsWindow.setVisible(0);
+	CMOrganizationManagerGui_jobModificationWindow.setVisible(0);
 }
 
 function clientcmdCM_Organizations_addJob(%jobID, %name) {
@@ -1119,6 +1119,375 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 	CMOrganizationManagerGui_jobSkillRequirementsTotal2.setText("<color:777777>" @ CMOrganizationManagerGui_jobSkillRequirementsTotal2.totalCount);
 }
 
+function clientcmdCM_Organizations_addJobAllTask(%taskID, %name, %description) {
+	if(!strLen(%taskID) || !strLen(%name) || !strLen(%description)) {
+		return;
+	}
+
+	%listGUI = CMOrganizationManagerGui_jobTasksList1;
+
+	%gui = new GuiBitmapBorderCtrl("_" @ %taskID) {
+		profile = "CMBorderThreeProfile";
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = "0 0";
+		extent = "314 47";
+		minExtent = "8 2";
+		enabled = "1";
+		visible = "1";
+		clipToParent = "1";
+		taskID = %taskID;
+		taskName = %name;
+		taskDescription = %description;
+
+		new GuiSwatchCtrl("_bg") {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "314 47";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			color = "248 248 248 255";
+		};
+
+		new GuiBitmapBorderCtrl() {
+			profile = "CMBorderThreeProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "42 42";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+		};
+
+		new GuiBitmapCtrl() {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "5 5";
+			extent = "32 32";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			bitmap = isFile("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : ("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : "Add-Ons/Client_CityMod/res/gui/icons/unknown";
+			wrap = "0";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			keepCached = "0";
+			mColor = "255 255 255 255";
+			mMultiply = "0";
+		};
+
+		new GuiMLTextCtrl("_name") {
+			profile = "CMTextSmallBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "46 6";
+			extent = "263 13";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = %name;
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+
+		new GuiBitmapCtrl() {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "44 21";
+			extent = "267 6";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/dividerHorizontal";
+			wrap = "0";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			keepCached = "0";
+			mColor = "255 255 255 255";
+			mMultiply = "0";
+		};
+
+		new GuiMLTextCtrl("_description") {
+			profile = "CMTextTinyProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "47 27";
+			extent = "262 12";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = %description;
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallColoredProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "294 4";
+			extent = "16 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			command = "CMOrganizationManagerGui.addJobTask(\"" @ %taskID @ "\");";
+			text = " ";
+			groupNum = "2";
+			buttonType = "RadioButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/editButton/editButton";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			mKeepCached = "0";
+			mColor = "77 165 255 255";
+		};
+	};
+
+	%listGUI.addListGuiObject(%gui);
+
+	%gui.child("description").forceReflow();
+
+	if((%descTotalHeight = %gui.child("description").getExtentH() + %gui.child("description").getPositionY()) > %gui.getExtentH()) {
+		%gui.setExtentH(%descTotalHeight + 8);
+		%gui.child("bg").setExtentH(%descTotalHeight + 8);
+	}
+
+	%listGUI.resizeListGui();
+
+	CMOrganizationManagerGui_jobTasksTotal1.totalCount++;
+	CMOrganizationManagerGui_jobTasksTotal1.setText("<just:right><color:777777>" @ CMOrganizationManagerGui_jobTasksTotal1.totalCount);
+}
+
+function clientcmdCM_Organizations_addJobTask(%taskID, %name) {
+	if(!strLen(%taskID) || !strLen(%name)) {
+		return;
+	}
+
+	%listGUI = CMOrganizationManagerGui_jobTasksList2;
+	%taskExists = false;
+
+	for(%i = 0; %i < %listGUI.getCount(); %i++) {
+		%taskGUI = %listGUI.getObject(%i);
+
+		if(%taskGUI.taskID $= %taskID) {
+			%taskExists = true;
+			break;
+		}
+	}
+
+	if(%taskExists) {
+		%taskGUI.taskCount++;
+		%taskGUI.child("count").setText("<just:center>" @ %taskGUI.taskCount);
+		return;
+	}
+
+	%gui = new GuiBitmapBorderCtrl("_" @ %taskID) {
+		profile = "CMBorderThreeProfile";
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = "0 0";
+		extent = "177 42";
+		minExtent = "8 2";
+		enabled = "1";
+		visible = "1";
+		clipToParent = "1";
+		taskID = %taskID;
+		taskName = %taskName;
+		taskCount = 1;
+
+		new GuiSwatchCtrl("_bg") {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "314 47";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			color = "248 248 248 255";
+		};
+
+		new GuiBitmapBorderCtrl() {
+			profile = "CMBorderThreeProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "0 0";
+			extent = "42 42";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+		};
+
+		new GuiBitmapCtrl() {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "5 5";
+			extent = "32 32";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			bitmap = isFile("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : ("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : "Add-Ons/Client_CityMod/res/gui/icons/unknown";
+			wrap = "0";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			keepCached = "0";
+			mColor = "255 255 255 255";
+			mMultiply = "0";
+		};
+
+		new GuiMLTextCtrl("_name") {
+			profile = "CMTextSmallBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "46 6";
+			extent = "102 13";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = %name;
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+
+		new GuiBitmapButtonCtrl() {
+			profile = "CMButtonSmallColoredProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "156 4";
+			extent = "16 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			command = "CMOrganizationManagerGui.removeJobTask(\"" @ %taskID @ "\");";
+			text = " ";
+			groupNum = "2";
+			buttonType = "RadioButton";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/closeButton/closeButton";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			mKeepCached = "0";
+			mColor = "255 75 75 255";
+		};
+
+		new GuiBitmapCtrl() {
+			profile = "GuiDefaultProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "148 1";
+			extent = "6 40";
+			minExtent = "6 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			bitmap = "Add-Ons/Client_CityMod/res/ui/dividerVertical";
+			wrap = "0";
+			lockAspectRatio = "0";
+			alignLeft = "0";
+			alignTop = "0";
+			overflowImage = "0";
+			keepCached = "0";
+			mColor = "255 255 255 255";
+			mMultiply = "0";
+		};
+
+		new GuiMLTextCtrl("_count") {
+			profile = "CMTextMediumBoldProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "155 22";
+			extent = "18 14";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = "<just:center>1";
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+	};
+
+	%listGUI.addListGuiObject(%gui);
+
+	CMOrganizationManagerGui_jobTasksTotal2.totalCount++;
+	CMOrganizationManagerGui_jobTasksTotal2.setText("<color:777777>" @ CMOrganizationManagerGui_jobTasksTotal2.totalCount);
+}
+
+function clientcmdCM_Organizations_removeJobTask(%taskID) {
+	if(!strLen(%taskID)) {
+		return;
+	}
+
+	%listGUI = CMOrganizationManagerGui_jobTasksList2;
+	%taskExists = false;
+
+	for(%i = 0; %i < %listGUI.getCount(); %i++) {
+		%taskGUI = %listGUI.getObject(%i);
+
+		if(%taskGUI.taskID $= %taskID) {
+			%taskExists = true;
+			break;
+		}
+	}
+
+	if(!%taskExists) {
+		return;
+	}
+
+	if(%taskGUI.taskCount <= 1) {
+		%listGUI.deleteListGuiObject(%gui);
+
+		CMOrganizationManagerGui_jobTasksTotal2.totalCount--;
+		CMOrganizationManagerGui_jobTasksTotal2.setText("<color:777777>" @ CMOrganizationManagerGui_jobTasksTotal2.totalCount);
+	} else {
+		%taskGUI.taskCount--;
+		%taskGUI.child("count").setText("<just:center>" @ %taskGUI.taskCount);
+	}
+}
+
 // Deprecated
 function clientcmdCM_Organizations_addOrganizationInvitation(%bl_id) {
 	if(!strLen(%bl_id)) {
@@ -1589,9 +1958,9 @@ function clientcmdCM_Organizations_addLedgerRecord(%month, %title, %amount, %cur
 // ============================================================
 
 function CMOrganizationManagerGui::onWake(%this) {
-	//CMOrganizationManagerGui_jobTasksEditWindow.setVisible(0);
+	CMOrganizationManagerGui_jobModificationWindow.setVisible(0);
 	CMOrganizationManagerGui_jobSkillRequirementsWindow.setVisible(0);
-	CMOrganizationManagerGui_applicantSkillsWindow.setVisible(0);
+	CMOrganizationManagerGui_jobTasksWindow.setVisible(0);
 
 	CMOrganizationManagerGui.userPrivilegeLevel = 0;
 	commandtoserver('CM_Organizations_requestUserPrivilegeLevel', %this.organizationID);
@@ -1808,11 +2177,15 @@ function CMOrganizationManagerGui::createJob(%this) {
 
 	CMOrganizationManagerGui_jobModificationName.setText("Default Organization");
 	CMOrganizationManagerGui_jobModificationDescription.setText("This job's description has not been set");
-	CMOrganizationManagerGui_jobModificationSalary.setText("0");
+	CMOrganizationManagerGui_jobModificationPay.setText("0");
 	CMOrganizationManagerGui_jobModificationOpenings.setText("0000");
 
 	CMOrganizationManagerGui_jobModificationAAOn.setValue(1);
 	CMOrganizationManagerGui_jobModificationAAOff.setValue(0);
+
+	CMOrganizationManagerGui_jobSkillsEditButton.setVisible(0);
+	CMOrganizationManagerGui_jobTasksEditButton.setVisible(0);
+	CMOrganizationManagerGui_jobEditRestrictedText.setVisible(1);
 
 	commandtoserver('CM_Organizations_requestJobConstraints');
 }
@@ -1824,21 +2197,25 @@ function CMOrganizationManagerGui::editJob(%this, %jobID) {
 	CMOrganizationManagerGui_jobModificationWindow.setText("Edit Job #" @ %jobID);
 	CMOrganizationManagerGui_jobModificationConfirmation.setText("Confirm Changes");
 
+	CMOrganizationManagerGui_jobEditRestrictedText.setVisible(0);
+	CMOrganizationManagerGui_jobSkillsEditButton.setVisible(1);
+	CMOrganizationManagerGui_jobTasksEditButton.setVisible(1);
+
 	commandtoserver('CM_Organizations_requestJobConstraints');
 	commandtoserver('CM_Organizations_requestJobModification', %this.organizationID, %jobID);
 }
 
 function CMOrganizationManagerGui::confirmJobModification(%this) {
-	if(CMOrganizationManagerGui_jobModificationWindow.newJob == true) {
-		%name = CMOrganizationManagerGui_jobModificationName.getValue();
-		%description = CMOrganizationManagerGui_jobModificationDescription.getValue();
-		%salary = CMOrganizationManagerGui_jobModificationSalary.getValue();
-		%openings = CMOrganizationManagerGui_jobModificationOpenings.getValue();
-		%autoaccept = CMOrganizationManagerGui_jobModificationAAOn.getValue() == 1 ? true : false;
+	%name = CMOrganizationManagerGui_jobModificationName.getValue();
+	%description = CMOrganizationManagerGui_jobModificationDescription.getValue();
+	%pay = CMOrganizationManagerGui_jobModificationPay.getValue();
+	%openings = CMOrganizationManagerGui_jobModificationOpenings.getValue() | 0;
+	%autoaccept = CMOrganizationManagerGui_jobModificationAAOn.getValue() == 1 ? true : false;
 
-		commandtoserver('CM_Organizations_createJob', %this.organizationID, %name, %description);
+	if(CMOrganizationManagerGui_jobModificationWindow.newJob == true) {
+		commandtoserver('CM_Organizations_createJob', %this.organizationID, %name, %description, %pay, %openings, %autoaccept);
 	} else {
-		commandtoserver('CM_Organizations_updateJob', %this.organizationID, CMOrganizationManagerGui_jobModificationWindow.jobID);
+		commandtoserver('CM_Organizations_updateJob', %this.organizationID, CMOrganizationManagerGui_jobModificationWindow.jobID, %name, %description, %pay, %openings, %autoaccept);
 	}
 }
 
@@ -1857,6 +2234,31 @@ function CMOrganizationManagerGui::editJobSkills(%this, %jobID) {
 
 	commandtoserver('CM_Organizations_requestJobSkills', %this.organizationID, %jobID);
 	commandtoserver('CM_Organizations_requestJobAllSkills', %this.organizationID, %jobID);
+}
+
+function CMOrganizationManagerGui::editJobTasks(%this, %jobID) {
+	CMOrganizationManagerGui_jobTasksWindow.setVisible(1);
+	CMOrganizationManagerGui_jobTasksWindow.jobID = %jobID;
+	CMOrganizationManagerGui_jobTasksWindow.setText("Edit Job #" @ %jobID @ "'s Tasks");
+
+	CMOrganizationManagerGui_jobTasksTotal1.totalCount = 0;
+	CMOrganizationManagerGui_jobTasksTotal2.totalCount = 0;
+	CMOrganizationManagerGui_jobTasksTotal1.setText("<just:right><color:777777>0");
+	CMOrganizationManagerGui_jobTasksTotal2.setText("<color:777777>0");
+
+	CMOrganizationManagerGui_jobTasksList1.deleteAll();
+	CMOrganizationManagerGui_jobTasksList2.deleteAll();
+
+	commandtoserver('CM_Organizations_requestJobTasks', %this.organizationID, %jobID);
+	commandtoserver('CM_Organizations_requestAllTasks', %this.organizationID, %jobID);
+}
+
+function CMOrganizationManagerGui::addJobTask(%this, %taskID) {
+	commandtoserver('CM_Organizations_addJobTask', %this.organizationID, CMOrganizationManagerGui_jobTasksWindow.jobID, %taskID);
+}
+
+function CMOrganizationManagerGui::removeJobTask(%this, %taskID) {
+	commandtoserver('CM_Organizations_removeJobTask', %this.organizationID, CMOrganizationManagerGui_jobTasksWindow.jobID, %taskID);
 }
 
 function CMOrganizationManagerGui::jobHasSkill(%this, %skill) {
@@ -1899,16 +2301,28 @@ function CMOrganizationManagerGui::filterSkillRequirements(%this) {
 	CMOrganizationManagerGui_jobSkillRequirementsList1.resizeListGui();
 }
 
-//function CMOrganizationManagerGui::editJobTasks(%this, %jobID) {
-//	CMOrganizationManagerGui_jobTasksEditWindow.setVisible(1);
-//	CMOrganizationManagerGui_jobTasksEditWindow.jobID = %jobID;
-//
-//	CMOrganizationManagerGui_jobTasksEditWindow.setText("Edit Job #" @ %jobID @ "'s Tasks");
-//	CMOrganizationManagerGui_jobTasksEditFilter.setText("Task Filter");
-//
-//	commandtoserver('CM_Organizations_requestAllTasks');
-//	commandtoserver('CM_Organizations_requestJobTasks', %this.organizationID, CMOrganizationManagerGui_jobTasksEditWindow.jobID);
-//}
+function CMOrganizationManagerGui::filterTasks(%this) {
+	%text = CMOrganizationManagerGui_jobTasksFilter.getValue();
+	%tasks = 0;
+
+	for(%i = 0; %i < CMOrganizationManagerGui_jobTasksList1.getCount(); %i++) {
+		%object = CMOrganizationManagerGui_jobTasksList1.getObject(%i);
+
+		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.child("name").getValue(), %text)) {
+			%object.setVisible(0);
+		} else {
+			if(!%object.isVisible()) {
+				%object.setVisible(1);
+			}
+
+			%tasks++;
+		}
+	}
+
+	CMOrganizationManagerGui_jobTasksTotal1.totalCount = %tasks;
+	CMOrganizationManagerGui_jobTasksTotal1.setText("<just:right><color:777777>" @ CMOrganizationManagerGui_jobTasksTotal1.totalCount);
+	CMOrganizationManagerGui_jobTasksList1.resizeListGui();
+}
 
 function CMOrganizationManagerGui::deleteJob(%this, %jobID) {
 	commandtoserver('CM_Organizations_deleteJob', %this.organizationID, %jobID);
@@ -1922,19 +2336,6 @@ function CMOrganizationManagerGui::sendInvitation(%this, %bl_id) {
 // Deprecated
 function CMOrganizationManagerGui::revokeInvitation(%this, %bl_id) {
 	commandtoserver('CM_Organizations_rekoveInvitation', %this.organizationID, %bl_id);
-}
-
-function CMOrganizationManagerGui::viewApplicantSkills(%this, %bl_id, %name) {
-	CMOrganizationManagerGui_applicantSkillsWindow.setVisible(1);
-	CMOrganizationManagerGui_applicantSkillsWindow.bl_id = %bl_id;
-	CMOrganizationManagerGui_applicantSkillsWindow.setText("Applicant" SPC (%name $= "" ? ("BL_ID" SPC %bl_id) : %name) @ "'s Skills");
-
-	CMOrganizationManagerGui_applicantSkillsMeetsRequirementsText.setText("N/A");
-	CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.setText("0/0");
-	CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.totalSkills = 0;
-	CMOrganizationManagerGui_applicantSkillsRequirementsAmountText.skillsMet = 0;
-
-	commandtoserver('CM_Organizations_requestApplicantSkills', %this.organizationID, %bl_id);
 }
 
 function CMOrganizationManagerGui::acceptApplication(%this, %bl_id) {
