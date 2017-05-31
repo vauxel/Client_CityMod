@@ -316,13 +316,13 @@ function clientcmdCM_Organizations_viewAvailableJobs(%id, %name, %skills) {
 	CMOrganizationsGui_jobs.organizationID = %id;
 	CMOrganizationsGui_jobs.applicantSkills = Stringify::parse(%skills);
 	CMOrganizationsGui_jobs.setText("Available Jobs for" SPC %name);
-	CMOrganizationsGui_jobList.deleteAll();
+	CMOrganizationsGui_jobsList.deleteAll();
 
 	CMOrganizationsGui_jobs.setVisible(1);
 }
 
-function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %openings, %autoaccept) {
-	if(!strLen(%name) || !strLen(%description) || !strLen(%pay) || !strLen(%openings) || !strLen(%autoaccept)) {
+function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %type, %openings, %autoaccept) {
+	if(!strLen(%name) || !strLen(%description) || !strLen(%pay) || !strLen(%type) || !strLen(%openings) || !strLen(%autoaccept)) {
 		return;
 	}
 
@@ -341,6 +341,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %o
 		jobName = %name;
 		jobDescription = %description;
 		jobPay = %pay;
+		jobType = %type;
 		jobOpenings = %openings;
 		jobAutoAccept = %autoaccept;
 
@@ -375,7 +376,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %o
 			profile = "CMTextTinyProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "61 31";
+			position = "59 31";
 			extent = "36 16";
 			minExtent = "8 2";
 			enabled = "1";
@@ -389,7 +390,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %o
 			profile = "CMTextTinyProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "44 18";
+			position = "32 18";
 			extent = "39 16";
 			minExtent = "8 2";
 			enabled = "1";
@@ -423,7 +424,7 @@ function clientcmdCM_Organizations_addAvailableJob(%name, %description, %pay, %o
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			text = "Difficulty:";
+			text = "Openings:";
 			maxLength = "255";
 		};
 
@@ -602,7 +603,7 @@ function CMOrganizationsGui::filterOrganizations(%this) {
 }
 
 function CMOrganizationsGui::filterJobs(%this) {
-	%text = CMOrganizationsGui_jobsSearchFilter.getValue();
+	%text = CMOrganizationsGui_jobSearchFilter.getValue();
 
 	for(%i = 0; %i < CMOrganizationsGui_jobsList.getCount(); %i++) {
 		%object = CMOrganizationsGui_jobsList.getObject(%i);
@@ -628,11 +629,12 @@ function CMOrganizationsGui::joinOrganization(%this, %id) {
 }
 
 function CMOrganizationsGui::showJobInfo(%this, %job) {
-	CMOrganizationsGui_jobInfo.child("name").setText(%job.jobName);
+	CMOrganizationsGui_jobInfo.child("name").setText("<just:center>" @ %job.jobName);
 	CMOrganizationsGui_jobInfo.child("description").setText(%job.jobDescription);
 	CMOrganizationsGui_jobInfo.child("pay").setText("$" @ commaSeparateAmount(%job.jobPay));
-	CMOrganizationsGui_jobInfo.child("difficulty").setText(%job.jobDifficulty);
-	CMOrganizationsGui_jobInfo.child("autoaccept").setText(%job.jobAutoAccept);
+	CMOrganizationsGui_jobInfo.child("type").setText(properText(%job.jobType));
+	CMOrganizationsGui_jobInfo.child("openings").setText(%job.jobOpenings);
+	CMOrganizationsGui_jobInfo.child("autoaccept").setText(%job.jobAutoAccept ? "Yes" : "No");
 	CMOrganizationsGui_jobSkillsList.deleteAll();
 
 	CMOrganizationsGui_jobInfo.child("applybutton").command = "CMOrganizationsGui.applyForJob(" @ %job.jobID @ ");";
@@ -641,6 +643,24 @@ function CMOrganizationsGui::showJobInfo(%this, %job) {
 
 function CMJobsMouseEventCtrl::onMouseDown(%this, %modifierKey, %mousePoint, %mouseClickCount) {
 	if(isObject(%job = %this.parent())) {
+		for(%i = 0; %i < CMOrganizationsGui_jobsList.getCount(); %i++) {
+			%otherJob = CMOrganizationsGui_jobsList.getObject(%i);
+
+			if(%otherJob.getID() == %job.getID()) {
+				continue;
+			}
+
+			CMOrganizationsGui_jobsList.remove(%otherJob);
+			%otherJob.setProfile("CMBorderOneProfile");
+			%otherJob.child("bg").color = "255 255 255 255";
+			CMOrganizationsGui_jobsList.add(%otherJob);
+		}
+
+		CMOrganizationsGui_jobsList.remove(%job);
+		%job.setProfile("CMBorderThreeProfile");
+		%job.child("bg").color = "248 248 248 255";
+		CMOrganizationsGui_jobsList.add(%job);
+
 		CMOrganizationsGui.showJobInfo(%job);
 	}
 }

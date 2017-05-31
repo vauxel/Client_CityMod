@@ -2984,8 +2984,8 @@ new GuiControl(CMOrganizationManagerGui) {
       profile = "CMWindowProfile";
       horizSizing = "center";
       vertSizing = "center";
-      position = "355 231";
-      extent = "313 305";
+      position = "297 230";
+      extent = "413 305";
       minExtent = "8 2";
       enabled = "1";
       visible = "0";
@@ -3006,7 +3006,7 @@ new GuiControl(CMOrganizationManagerGui) {
          horizSizing = "right";
          vertSizing = "bottom";
          position = "5 32";
-         extent = "303 20";
+         extent = "403 20";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3017,7 +3017,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "relative";
             vertSizing = "relative";
             position = "0 0";
-            extent = "303 20";
+            extent = "403 20";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3029,7 +3029,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "bottom";
             position = "4 3";
-            extent = "142 13";
+            extent = "192 13";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3047,7 +3047,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "bottom";
             position = "4 3";
-            extent = "144 13";
+            extent = "194 13";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3059,14 +3059,14 @@ new GuiControl(CMOrganizationManagerGui) {
             maxBitmapHeight = "-1";
             selectable = "1";
             autoResize = "1";
-               totalCount = "0";
+               totalCount = "3";
          };
          new GuiMLTextCtrl() {
             profile = "CMTextSmallBoldProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "157 3";
-            extent = "142 13";
+            position = "207 3";
+            extent = "192 13";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3083,8 +3083,8 @@ new GuiControl(CMOrganizationManagerGui) {
             profile = "CMTextSmallBoldProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "155 3";
-            extent = "144 13";
+            position = "205 3";
+            extent = "194 13";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3096,13 +3096,13 @@ new GuiControl(CMOrganizationManagerGui) {
             maxBitmapHeight = "-1";
             selectable = "1";
             autoResize = "1";
-               totalCount = "0";
+               totalCount = "1";
          };
          new GuiBitmapCtrl() {
             profile = "GuiDefaultProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "148 0";
+            position = "198 0";
             extent = "6 20";
             minExtent = "6 2";
             enabled = "1";
@@ -3124,7 +3124,7 @@ new GuiControl(CMOrganizationManagerGui) {
          horizSizing = "right";
          vertSizing = "bottom";
          position = "5 55";
-         extent = "150 211";
+         extent = "200 210";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3135,7 +3135,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "relative";
             vertSizing = "relative";
             position = "0 0";
-            extent = "151 211";
+            extent = "200 210";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3148,7 +3148,7 @@ new GuiControl(CMOrganizationManagerGui) {
          horizSizing = "right";
          vertSizing = "bottom";
          position = "8 58";
-         extent = "144 205";
+         extent = "194 204";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3166,7 +3166,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "bottom";
             position = "1 1";
-            extent = "144 2";
+            extent = "194 2";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3180,7 +3180,7 @@ new GuiControl(CMOrganizationManagerGui) {
          horizSizing = "right";
          vertSizing = "bottom";
          position = "5 268";
-         extent = "150 32";
+         extent = "200 32";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3191,7 +3191,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "bottom";
             position = "0 0";
-            extent = "150 32";
+            extent = "200 32";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3203,7 +3203,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "center";
             position = "4 7";
-            extent = "142 17";
+            extent = "192 17";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3221,8 +3221,8 @@ new GuiControl(CMOrganizationManagerGui) {
          profile = "CMBorderOneProfile";
          horizSizing = "right";
          vertSizing = "bottom";
-         position = "158 55";
-         extent = "150 245";
+         position = "208 55";
+         extent = "200 245";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3233,7 +3233,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "relative";
             vertSizing = "relative";
             position = "0 0";
-            extent = "151 245";
+            extent = "200 245";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3245,8 +3245,8 @@ new GuiControl(CMOrganizationManagerGui) {
          profile = "CMScrollProfile";
          horizSizing = "right";
          vertSizing = "bottom";
-         position = "161 58";
-         extent = "144 239";
+         position = "211 58";
+         extent = "194 239";
          minExtent = "8 2";
          enabled = "1";
          visible = "1";
@@ -3264,7 +3264,7 @@ new GuiControl(CMOrganizationManagerGui) {
             horizSizing = "right";
             vertSizing = "bottom";
             position = "1 1";
-            extent = "144 2";
+            extent = "194 2";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
@@ -3544,7 +3544,8 @@ new GuiControl(CMOrganizationManagerGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "Salary";
+            command = "CMOrganizationManagerGui.setJobTaskType(\"commision\");";
+            text = "Commision";
             groupNum = "2";
             buttonType = "RadioButton";
             bitmap = "~/Client_CityMod/res/ui/button_regular/button";
@@ -3565,7 +3566,8 @@ new GuiControl(CMOrganizationManagerGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "Commision";
+            command = "CMOrganizationManagerGui.setJobTaskType(\"salary\");";
+            text = "Salary";
             groupNum = "2";
             buttonType = "RadioButton";
             bitmap = "~/Client_CityMod/res/ui/button_regular/button";

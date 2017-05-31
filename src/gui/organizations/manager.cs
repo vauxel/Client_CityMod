@@ -439,6 +439,35 @@ function clientcmdCM_Organizations_closeJobModification() {
 	CMOrganizationManagerGui_jobModificationWindow.setVisible(0);
 }
 
+function clientcmdCM_Organizations_updateJobName(%jobID, %name) {
+	if(!strLen(%jobID) || !strLen(%name)) {
+		return;
+	}
+
+	for(%i = 0; %i < CMOrganizationManagerGui_jobsList.getCount(); %i++) {
+		%job = CMOrganizationManagerGui_jobsList.getObject(%i);
+		if(%job.jobID $= %jobID) {
+			%job.jobName = %name;
+			%job.child("name").setText(%name @ "<font:Verdana:10> (#" @ %jobID @ ")");
+			break;
+		}
+	}
+}
+
+function clientcmdCM_Organizations_setJobTaskType(%type) {
+	if(!strLen(%type)) {
+		return;
+	}
+
+	if(%type $= "commision") {
+		CMOrganizationManagerGui_jobTasksType1.setValue(1);
+		CMOrganizationManagerGui_jobTasksType2.setValue(0);
+	} else if(%type $= "salary") {
+		CMOrganizationManagerGui_jobTasksType1.setValue(0);
+		CMOrganizationManagerGui_jobTasksType2.setValue(1);
+	}
+}
+
 function clientcmdCM_Organizations_addJob(%jobID, %name) {
 	if(!strLen(%jobID) || !strLen(%name)) {
 		return;
@@ -613,10 +642,8 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 	}
 
 	%listGUI = CMOrganizationManagerGui_jobsGroupList;
-	%jobGUI = %listGUI.child("job" @ %jobID);
 
-	if(!isObject(%jobGUI)) {
-		%addJob = true;
+	if(!isObject(%jobGUI = %listGUI.child("job" @ %jobID))) {
 		%jobGUI = new GuiSwatchCtrl("_job" @ %jobID) {
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
@@ -687,12 +714,16 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 				clipToParent = "1";
 			};
 		};
+
+		%listGUI.addListGuiObject(%jobGUI);
 	}
 
-	%jobGUIMemberCount = %jobGUI.child("body").getCount();
-	%ypos = %jobGUIMemberCount < 1 ? 3 : (%jobGUI.getObject(%jobGUIMemberCount - 1).getPositionY() + 12);
+	%jobGUIBody = %jobGUI.child("body");
 
-	%jobGUI.child("body").add(new GuiMLTextCtrl("_member" @ %jobGUIMemberCount) {
+	%jobGUIMemberCount = %jobGUIBody.getCount();
+	%ypos = %jobGUIMemberCount < 1 ? 3 : (%jobGUIBody.getObject(%jobGUIMemberCount - 1).getPositionY() + 12);
+
+	%jobGUIBody.add(new GuiMLTextCtrl("_member" @ %jobGUIMemberCount) {
 		profile = "CMTextTinyBoldProfile";
 		horizSizing = "right";
 		vertSizing = "bottom";
@@ -711,14 +742,10 @@ function clientcmdCM_Organizations_addJobGroupMember(%jobID, %jobName, %memberNa
 		autoResize = "1";
 	});
 
-	%jobGUI.child("body").setExtentH(%ypos + 12 + 4);
-	%jobGUI.setExtentH(%jobGUI.child("body").getPositionY() + (%ypos + 12 + 4));
+	%jobGUIBody.setExtentH(%ypos + 12 + 4);
+	%jobGUI.setExtentH(%jobGUIBody.getPositionY() + (%ypos + 12 + 4));
 
-	if(%addJob) {
-		%listGUI.addListGuiObject(%jobGUI);
-	} else {
-		%listGUI.resizeListGui();
-	}
+	%listGUI.resizeListGui();
 }
 
 function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %skill, %skillName) {
@@ -735,7 +762,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "0 0";
-			extent = "127 96";
+			extent = "177 96";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -748,7 +775,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 0";
-				extent = "127 96";
+				extent = "177 96";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -761,7 +788,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "5 3";
-				extent = "117 13";
+				extent = "167 13";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -780,7 +807,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 16";
-				extent = "127 6";
+				extent = "177 6";
 				minExtent = "6 2";
 				enabled = "1";
 				visible = "1";
@@ -801,7 +828,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "5 22";
-				extent = "117 68";
+				extent = "167 68";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -820,7 +847,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = "0" SPC %ypos;
-		extent = "117 33";
+		extent = "167 33";
 		minExtent = "8 2";
 		enabled = "1";
 		visible = "1";
@@ -833,7 +860,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "0 0";
-			extent = "115 33";
+			extent = "165 33";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -846,7 +873,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "5 3";
-			extent = "92 26";
+			extent = "142 26";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -864,7 +891,7 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "89 0";
+			position = "138 0";
 			extent = "6 33";
 			minExtent = "6 2";
 			enabled = "1";
@@ -885,13 +912,13 @@ function clientcmdCM_Organizations_addJobAllSkill(%skillset, %skillsetName, %ski
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "96 8";
+			position = "146 8";
 			extent = "16 16";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			command = "CMOrganizationManagerGui.addJobSkill(\"" @ %skill @ "\");";
+			command = "CMOrganizationManagerGui.addJobSkill(\"" @ %skillset @ ":" @ %skill @ "\");";
 			text = " ";
 			groupNum = "-1";
 			buttonType = "PushButton";
@@ -934,7 +961,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "0 0";
-			extent = "127 96";
+			extent = "177 96";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -947,7 +974,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 0";
-				extent = "127 96";
+				extent = "177 96";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -960,7 +987,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "5 3";
-				extent = "117 13";
+				extent = "167 13";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -979,7 +1006,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "0 16";
-				extent = "127 6";
+				extent = "177 6";
 				minExtent = "6 2";
 				enabled = "1";
 				visible = "1";
@@ -1000,7 +1027,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 				horizSizing = "right";
 				vertSizing = "bottom";
 				position = "5 22";
-				extent = "117 68";
+				extent = "167 68";
 				minExtent = "8 2";
 				enabled = "1";
 				visible = "1";
@@ -1019,7 +1046,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 		horizSizing = "right";
 		vertSizing = "bottom";
 		position = "0" SPC %ypos;
-		extent = "117 33";
+		extent = "167 33";
 		minExtent = "8 2";
 		enabled = "1";
 		visible = "1";
@@ -1032,7 +1059,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "0 0";
-			extent = "115 33";
+			extent = "165 33";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -1045,7 +1072,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 			horizSizing = "right";
 			vertSizing = "bottom";
 			position = "5 3";
-			extent = "92 26";
+			extent = "142 26";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
@@ -1063,7 +1090,7 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "89 0";
+			position = "138 0";
 			extent = "6 33";
 			minExtent = "6 2";
 			enabled = "1";
@@ -1084,13 +1111,13 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 			profile = "GuiDefaultProfile";
 			horizSizing = "right";
 			vertSizing = "bottom";
-			position = "96 8";
+			position = "146 8";
 			extent = "16 16";
 			minExtent = "8 2";
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			command = "CMOrganizationManagerGui.removeJobSkill(\"" @ %skill @ "\");";
+			command = "CMOrganizationManagerGui.removeJobSkill(\"" @ %skillset @ ":" @ %skill @ "\");";
 			text = " ";
 			groupNum = "-1";
 			buttonType = "PushButton";
@@ -1117,6 +1144,45 @@ function clientcmdCM_Organizations_addJobSkill(%skillset, %skillsetName, %skill,
 
 	CMOrganizationManagerGui_jobSkillRequirementsTotal2.totalCount++;
 	CMOrganizationManagerGui_jobSkillRequirementsTotal2.setText("<color:777777>" @ CMOrganizationManagerGui_jobSkillRequirementsTotal2.totalCount);
+}
+
+function clientcmdCM_Organizations_removeJobSkill(%skillset, %skill) {
+	if(!strLen(%skillset) || !strLen(%skill)) {
+		return;
+	}
+
+	%listGUI = CMOrganizationManagerGui_jobSkillRequirementsList2;
+
+	for(%i = 0; %i < %listGUI.getCount(); %i++) {
+		%skillsetGUI = %listGUI.getObject(%i);
+
+		if(%skillsetGUI.skillsetID !$= %skillset) {
+			continue;
+		}
+
+		for(%j = 0; %j < %skillsetGUI.child("skills").getCount(); %j++) {
+			%skillGUI = %skillsetGUI.child("skills").getObject(%j);
+
+			if(%skillGUI.skillID !$= %skill) {
+				continue;
+			}
+
+			%skillGUIShiftAmt = %skillGUI.getExtentH() + 3;
+
+			for(%k = %j + 1; %k < %skillsetGUI.child("skills").getCount(); %k++) {
+				%otherskillGUI = %skillsetGUI.child("skills").getObject(%k);
+				%otherskillGUI.setPositionY(%otherskillGUI.getPositionY() - %skillGUIShiftAmt);
+			}
+
+			%skillsetGUI.child("skills").setExtentH(%skillsetGUI.child("skills").getExtentH() - %skillGUIShiftAmt);
+			%skillsetGUI.setExtentH(%skillsetGUI.getExtentH() - %skillGUIShiftAmt);
+			%skillsetGUI.child("bg").setExtentH(%skillsetGUI.getExtentH() - %skillGUIShiftAmt);
+
+			%skillGUI.delete();
+
+			return;
+		}
+	}
 }
 
 function clientcmdCM_Organizations_addJobAllTask(%taskID, %name, %description) {
@@ -1175,7 +1241,7 @@ function clientcmdCM_Organizations_addJobAllTask(%taskID, %name, %description) {
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			bitmap = isFile("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : ("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : "Add-Ons/Client_CityMod/res/gui/icons/unknown";
+			bitmap = isFile("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) ? ("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : "Add-Ons/Client_CityMod/res/gui/icons/unknown";
 			wrap = "0";
 			lockAspectRatio = "0";
 			alignLeft = "0";
@@ -1356,7 +1422,7 @@ function clientcmdCM_Organizations_addJobTask(%taskID, %name) {
 			enabled = "1";
 			visible = "1";
 			clipToParent = "1";
-			bitmap = isFile("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : ("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : "Add-Ons/Client_CityMod/res/gui/icons/unknown";
+			bitmap = isFile("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) ? ("Add-Ons/Client_CityMod/res/gui/tasks/" @ %taskID) : "Add-Ons/Client_CityMod/res/gui/icons/unknown";
 			wrap = "0";
 			lockAspectRatio = "0";
 			alignLeft = "0";
@@ -1712,7 +1778,6 @@ function clientcmdCM_Organizations_addApplication(%bl_id, %name, %jobID, %jobNam
 	%listGUI.addListGuiObject(%gui);
 
 	CMOrganizationManagerGui_applicationsCount.setText(%listGUI.getCount() SPC "Pending Applications");
-	CMOrganizationManagerGui_applicationsCount.forceReflow();
 	CMOrganizationManagerGui_applicationsCountBorder.setExtentW(3 + CMOrganizationManagerGui_applicationsCount.getExtentW() + 3);
 }
 
@@ -2097,7 +2162,6 @@ function CMOrganizationManagerGui::selectPanel(%this, %name) {
 		}
 
 		CMOrganizationManagerGui_applicationsCount.setText("0 Pending Applications");
-		CMOrganizationManagerGui_applicationsCount.forceReflow();
 		CMOrganizationManagerGui_applicationsCountBorder.setExtentW(3 + CMOrganizationManagerGui_applicationsCount.getExtentW() + 3);
 		clientcmdCM_Organizations_clearApplications();
 
@@ -2201,6 +2265,9 @@ function CMOrganizationManagerGui::editJob(%this, %jobID) {
 	CMOrganizationManagerGui_jobSkillsEditButton.setVisible(1);
 	CMOrganizationManagerGui_jobTasksEditButton.setVisible(1);
 
+	CMOrganizationManagerGui_jobSkillsEditButton.command = "CMOrganizationManagerGui.editJobSkills(" @ %jobID @ ");";
+	CMOrganizationManagerGui_jobTasksEditButton.command = "CMOrganizationManagerGui.editJobTasks(" @ %jobID @ ");";
+
 	commandtoserver('CM_Organizations_requestJobConstraints');
 	commandtoserver('CM_Organizations_requestJobModification', %this.organizationID, %jobID);
 }
@@ -2233,7 +2300,7 @@ function CMOrganizationManagerGui::editJobSkills(%this, %jobID) {
 	CMOrganizationManagerGui_jobSkillRequirementsList2.deleteAll();
 
 	commandtoserver('CM_Organizations_requestJobSkills', %this.organizationID, %jobID);
-	commandtoserver('CM_Organizations_requestJobAllSkills', %this.organizationID, %jobID);
+	commandtoserver('CM_Organizations_requestAllSkills');
 }
 
 function CMOrganizationManagerGui::editJobTasks(%this, %jobID) {
@@ -2250,7 +2317,16 @@ function CMOrganizationManagerGui::editJobTasks(%this, %jobID) {
 	CMOrganizationManagerGui_jobTasksList2.deleteAll();
 
 	commandtoserver('CM_Organizations_requestJobTasks', %this.organizationID, %jobID);
-	commandtoserver('CM_Organizations_requestAllTasks', %this.organizationID, %jobID);
+	commandtoserver('CM_Organizations_requestAllTasks');
+	commandtoserver('CM_Organizations_requestJobType', %this.organizationID, %jobID);
+}
+
+function CMOrganizationManagerGui::addJobSkill(%this, %skillID) {
+	commandtoserver('CM_Organizations_addJobSkill', %this.organizationID, CMOrganizationManagerGui_jobTasksWindow.jobID, %skillID);
+}
+
+function CMOrganizationManagerGui::removeJobSkill(%this, %skillID) {
+	commandtoserver('CM_Organizations_removeJobSkill', %this.organizationID, CMOrganizationManagerGui_jobTasksWindow.jobID, %skillID);
 }
 
 function CMOrganizationManagerGui::addJobTask(%this, %taskID) {
@@ -2259,6 +2335,10 @@ function CMOrganizationManagerGui::addJobTask(%this, %taskID) {
 
 function CMOrganizationManagerGui::removeJobTask(%this, %taskID) {
 	commandtoserver('CM_Organizations_removeJobTask', %this.organizationID, CMOrganizationManagerGui_jobTasksWindow.jobID, %taskID);
+}
+
+function CMOrganizationManagerGui::setJobTaskType(%this, %type) {
+	commandtoserver('CM_Organizations_setJobType', %this.organizationID, CMOrganizationManagerGui_jobTasksWindow.jobID, %type);
 }
 
 function CMOrganizationManagerGui::jobHasSkill(%this, %skill) {

@@ -558,7 +558,7 @@ new GuiControl(CMOrganizationsGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "Positions:";
+            text = "Openings:";
             maxLength = "255";
          };
          new GuiTextCtrl() {
@@ -571,7 +571,7 @@ new GuiControl(CMOrganizationsGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "Difficulty:";
+            text = "Type:";
             maxLength = "255";
          };
          new GuiTextCtrl() {
@@ -658,7 +658,7 @@ new GuiControl(CMOrganizationsGui) {
             profile = "CMTextSmallProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "59 111";
+            position = "41 111";
             extent = "14 17";
             minExtent = "8 2";
             enabled = "1";
@@ -667,30 +667,30 @@ new GuiControl(CMOrganizationsGui) {
             text = "$0";
             maxLength = "255";
          };
-         new GuiTextCtrl(_positions) {
+         new GuiTextCtrl(_openings) {
             profile = "CMTextSmallProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "76 127";
+            position = "77 127";
             extent = "19 17";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "0/0";
+            text = "1";
             maxLength = "255";
          };
-         new GuiTextCtrl(_difficulty) {
+         new GuiTextCtrl(_type) {
             profile = "CMTextSmallProfile";
             horizSizing = "right";
             vertSizing = "bottom";
-            position = "246 111";
+            position = "219 111";
             extent = "22 17";
             minExtent = "8 2";
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            text = "Low";
+            text = "Unknown";
             maxLength = "255";
          };
          new GuiTextCtrl(_autoaccept) {
