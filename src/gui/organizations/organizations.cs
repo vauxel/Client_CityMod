@@ -35,6 +35,14 @@ function clientcmdCM_Organizations_addOrganization(%id, %type, %open, %owner, %n
 		enabled = "1";
 		visible = "1";
 		clipToParent = "1";
+		orgID = %id;
+		orgType = %type;
+		orgOpen = %open;
+		orgOwner = %owner;
+		orgName = %name;
+		orgMembers = %members;
+		orgJobs = %jobs;
+		orgIsMemeber = %isMember;
 
 		new GuiSwatchCtrl("_bg") {
 			profile = "GuiDefaultProfile";
@@ -585,7 +593,7 @@ function CMOrganizationsGui::filterOrganizations(%this) {
 	for(%i = 0; %i < CMOrganizationsGui_organizationsList.getCount(); %i++) {
 		%object = CMOrganizationsGui_organizationsList.getObject(%i);
 
-		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.child("name").getValue(), %text)) {
+		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.orgName, %text)) {
 			%object.setVisible(0);
 		} else {
 			if(!%object.isVisible()) {
@@ -593,7 +601,7 @@ function CMOrganizationsGui::filterOrganizations(%this) {
 			}
 
 			%organizations++;
-			%jobs += %object.child("jobs").getValue();
+			%jobs += %object.orgJobs;
 		}
 	}
 
@@ -608,7 +616,7 @@ function CMOrganizationsGui::filterJobs(%this) {
 	for(%i = 0; %i < CMOrganizationsGui_jobsList.getCount(); %i++) {
 		%object = CMOrganizationsGui_jobsList.getObject(%i);
 
-		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.child("name").getValue(), %text)) {
+		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.jobName, %text)) {
 			%object.setVisible(0);
 		} else {
 			if(!%object.isVisible()) {

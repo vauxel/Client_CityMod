@@ -170,6 +170,25 @@ function colorCodeToML(%string) {
 	return %string;
 }
 
+function readableAmount(%amount, %clip) {
+	if(!isNumber(%clip)) {
+		switch$(strUpr(%clip)) {
+			case "K": %clipamt = mPow(1000, 1);
+			case "M": %clipamt = mPow(1000, 2);
+			case "B": %clipamt = mPow(1000, 3);
+			case "T": %clipamt = mPow(1000, 4);
+		}
+	} else {
+		%clipamt = %clip;
+	}
+
+	if(%amount >= %clipamt) {
+		return suffixAmount(%amount);
+	} else {
+		return commaSeparateAmount(%amount);
+	}
+}
+
 function suffixAmount(%amount, %floatLength) {
 	if(%amount < 1000) {
 		return %amount;

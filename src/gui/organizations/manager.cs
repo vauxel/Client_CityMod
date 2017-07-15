@@ -2364,7 +2364,7 @@ function CMOrganizationManagerGui::filterSkillRequirements(%this) {
 		for(%j = 0; %j < %skillsetSkills.getCount(); %j++) {
 			%skill = %skillsetSkills.getObject(%j);
 
-			if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%skill.child("name").getValue(), %text)) {
+			if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%skill.skillName, %text)) {
 				%skill.setVisible(0);
 			} else {
 				if(!%skill.isVisible()) {
@@ -2388,7 +2388,7 @@ function CMOrganizationManagerGui::filterTasks(%this) {
 	for(%i = 0; %i < CMOrganizationManagerGui_jobTasksList1.getCount(); %i++) {
 		%object = CMOrganizationManagerGui_jobTasksList1.getObject(%i);
 
-		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.child("name").getValue(), %text)) {
+		if((%text !$= "") && (%text !$= "Search Filter") && !searchString(%object.taskName, %text)) {
 			%object.setVisible(0);
 		} else {
 			if(!%object.isVisible()) {
@@ -2432,7 +2432,7 @@ function CMOrganizationManagerGui::filterMembers(%this) {
 	for(%i = 0; %i < CMOrganizationManagerGui_membersList.getCount(); %i++) {
 		%object = CMOrganizationManagerGui_membersList.getObject(%i);
 
-		if((%text !$= "") && (%text !$= "Search for a Member") && !searchString(stripMLControlChars(%object.child("name").getValue()), %text)) {
+		if((%text !$= "") && (%text !$= "Search for a Member") && !searchString(%object.memberName, %text)) {
 			%object.setVisible(0);
 		} else {
 			if(!%object.isVisible()) {
