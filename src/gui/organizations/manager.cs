@@ -459,7 +459,7 @@ function clientcmdCM_Organizations_setJobTaskType(%type) {
 		return;
 	}
 
-	if(%type $= "commision") {
+	if(%type $= "commission") {
 		CMOrganizationManagerGui_jobTasksType1.setValue(1);
 		CMOrganizationManagerGui_jobTasksType2.setValue(0);
 	} else if(%type $= "salary") {

@@ -3544,8 +3544,8 @@ new GuiControl(CMOrganizationManagerGui) {
             enabled = "1";
             visible = "1";
             clipToParent = "1";
-            command = "CMOrganizationManagerGui.setJobTaskType(\"commision\");";
-            text = "Commision";
+            command = "CMOrganizationManagerGui.setJobTaskType(\"commission\");";
+            text = "Commission";
             groupNum = "2";
             buttonType = "RadioButton";
             bitmap = "~/Client_CityMod/res/ui/button_regular/button";
