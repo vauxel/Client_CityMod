@@ -35,6 +35,7 @@ function CMClient_HUD_InfoPanel_Toggle(%i) {
 		setScrollMode(0); // Hide PaintGUI
 
 		commandToServer('CM_Infopanel_requestSkillsets');
+		commandToServer('CM_Infopanel_requestTasks');
 		CMClient_HUD.setComponentShown("infopanel", true, "left", "easeInOutSine");
 
 		if(CMClient_HUD.componentExists("chat")) {

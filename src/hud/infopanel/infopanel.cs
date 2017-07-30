@@ -101,8 +101,126 @@ function clientcmdCM_Infopanel_updateStats(%stats) {
 	}
 }
 
-function clientcmdCM_Infopanel_updateSkillsets(%skillsets) {
-	if(!strLen(%skillsets)) {
+function clientcmdCM_Infopanel_clearTasks(%value) {
+	%tasksScroll = CMClient_HUD.gui["infopanel"].child("movableArea").child("tasks").child("scroll");
+	%tasksScroll.child("list").deleteAll();
+	%tasksScroll.child("emptyText").setVisible(true);
+}
+
+function clientcmdCM_Infopanel_updateTask(%task, %name, %currentProgress, %totalProgress) {
+	if(!strLen(%task) || !strLen(%name) || !strLen(%currentProgress) || !strLen(%totalProgress)) {
+		return;
+	}
+
+	if(!isObject(CMClient_HUD) || !CMClient_HUD.componentExists("infopanel")) {
+		return;
+	}
+
+	%taskScroll = CMClient_HUD.gui["infopanel"].child("movableArea").child("tasks").child("scroll");
+	%listGUI = %taskScroll.child("list");
+
+	for(%i = 0; %i < %listGUI.getCount(); %i++) {
+		%taskGUI = %listGUI.getObject(%i);
+
+		if(%taskGUI.taskID $= %task) {
+			%taskGUI.child("name").setValue("<shadow:2:2><shadowcolor:00000066><color:EEEEEE><font:Impact:16>" @ %name);
+			%taskGUI.child("status").setValue("<just:center><color:7f7f7f><font:Impact:15>" @ %currentProgress SPC "/" SPC %totalProgress);
+			%taskGUI.child("progress").setValue(mFloatLength((%currentProgress / %totalProgress) * 100, 1) / 100);
+			break;
+		}
+	}
+}
+
+function clientcmdCM_Infopanel_addTask(%task, %name, %currentProgress, %totalProgress) {
+	if(!strLen(%task) || !strLen(%name) || !strLen(%currentProgress) || !strLen(%totalProgress)) {
+		return;
+	}
+
+	if(!isObject(CMClient_HUD) || !CMClient_HUD.componentExists("infopanel")) {
+		return;
+	}
+
+	%tasksScroll = CMClient_HUD.gui["infopanel"].child("movableArea").child("tasks").child("scroll");
+	%listGUI = %tasksScroll.child("list");
+
+	%tasksScroll.child("emptyText").setVisible(false);
+
+	%gui = new GuiSwatchCtrl("_task" @ %listGUI.getCount()) {
+		profile = "GuiDefaultProfile";
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = "0 0";
+		extent = "87 40";
+		minExtent = "8 2";
+		enabled = "1";
+		visible = "1";
+		clipToParent = "1";
+		color = "10 10 10 120";
+		taskID = %task;
+
+		new GuiMLTextCtrl("_name") {
+			profile = "GuiMLTextProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "3 0";
+			extent = "81 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = "<shadow:2:2><shadowcolor:00000066><color:EEEEEE><font:Impact:16>" @ %name;
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+
+		new GuiProgressCtrl("_progress") {
+			profile = "CMProgress2Profile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "3 17";
+			extent = "81 20";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+		};
+
+		new GuiMLTextCtrl("_status") {
+			profile = "GuiMLTextProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "3 19";
+			extent = "81 15";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = "<just:center><color:7f7f7f><font:Impact:15>" @ %currentProgress SPC "/" SPC %totalProgress;
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+	};
+
+	%listGUI.addListGuiObject(%gui);
+	%gui.child("progress").setValue(mFloatLength((%currentProgress / %totalProgress) * 100, 2) / 100);
+}
+
+function clientcmdCM_Infopanel_clearSkillsets(%value) {
+	%skillsetScroll = CMClient_HUD.gui["infopanel"].child("movableArea").child("skillsets").child("scroll");
+	%skillsetScroll.child("list").deleteAll();
+	%skillsetScroll.child("emptyText").setVisible(true);
+}
+
+function clientcmdCM_Infopanel_updateSkillset(%skillset, %name, %level, %xppercent) {
+	if(!strLen(%skillset) || !strLen(%name) || !strLen(%level) || !strLen(%xppercent)) {
 		return;
 	}
 
@@ -113,87 +231,98 @@ function clientcmdCM_Infopanel_updateSkillsets(%skillsets) {
 	%skillsetScroll = CMClient_HUD.gui["infopanel"].child("movableArea").child("skillsets").child("scroll");
 	%listGUI = %skillsetScroll.child("list");
 
-	%listGUI.deleteAll();
+	for(%i = 0; %i < %listGUI.getCount(); %i++) {
+		%skillsetGUI = %listGUI.getObject(%i);
 
-	if(%skillsets $= "none") {
-		%skillsetScroll.child("emptyText").setVisible(1);
-	} else {
-		if(!isObject(%skillsets = Stringify::parse(%skillsets))) {
-			return;
+		if(%skillsetGUI.skillsetID $= %skillset) {
+			%skillsetGUI.child("name").setValue("<shadow:2:2><shadowcolor:00000066><color:EEEEEE><font:Impact:16>" @ %name);
+			%skillsetGUI.child("level").setValue("<shadow:2:2><shadowcolor:00000066><color:E8E8E8><font:Impact:15>Lvl" SPC pad(%level, 2));
+			%skillsetGUI.child("xp").setValue(%xppercent / 100);
+			break;
 		}
-
-		for(%i = 0; %i < %skillsets.length; %i++) {
-			%skillset = %skillsets.value[%i];
-
-			%gui = new GuiSwatchCtrl("_" @ %skillsets.value[%i]) {
-				profile = "GuiDefaultProfile";
-				horizSizing = "right";
-				vertSizing = "bottom";
-				position = "0 0";
-				extent = "87 30";
-				minExtent = "8 2";
-				enabled = "1";
-				visible = "1";
-				clipToParent = "1";
-				color = "10 10 10 120";
-
-				new GuiMLTextCtrl("_name") {
-					profile = "GuiMLTextProfile";
-					horizSizing = "right";
-					vertSizing = "bottom";
-					position = "3 0";
-					extent = "81 16";
-					minExtent = "8 2";
-					enabled = "1";
-					visible = "1";
-					clipToParent = "1";
-					lineSpacing = "2";
-					allowColorChars = "0";
-					maxChars = "-1";
-					text = "<shadow:2:2><shadowcolor:00000066><color:EEEEEE><font:Impact:16>" @ getField(%skillset, 0);
-					maxBitmapHeight = "-1";
-					selectable = "1";
-					autoResize = "1";
-				};
-
-				new GuiMLTextCtrl("_level") {
-					profile = "GuiMLTextProfile";
-					horizSizing = "right";
-					vertSizing = "bottom";
-					position = "3 13";
-					extent = "81 15";
-					minExtent = "8 2";
-					enabled = "1";
-					visible = "1";
-					clipToParent = "1";
-					lineSpacing = "2";
-					allowColorChars = "0";
-					maxChars = "-1";
-					text = "<shadow:2:2><shadowcolor:00000066><color:E8E8E8><font:Impact:15>Lvl" SPC pad(getField(%skillset, 1), 2);
-					maxBitmapHeight = "-1";
-					selectable = "1";
-					autoResize = "1";
-				};
-
-				new GuiProgressCtrl("_xp") {
-					profile = "CMProgress2Profile";
-					horizSizing = "right";
-					vertSizing = "bottom";
-					position = "33 17";
-					extent = "52 10";
-					minExtent = "8 2";
-					enabled = "1";
-					visible = "1";
-					clipToParent = "1";
-				};
-			};
-
-			%listGUI.addListGuiObject(%gui);
-			%gui.child("xp").setValue(getField(%skillset, 2) / 100);
-		}
-
-		%skillsetScroll.child("emptyText").setVisible(0);
 	}
+}
+
+function clientcmdCM_Infopanel_addSkillset(%skillset, %name, %level, %xppercent) {
+	if(!strLen(%skillset) || !strLen(%name) || !strLen(%level) || !strLen(%xppercent)) {
+		return;
+	}
+
+	if(!isObject(CMClient_HUD) || !CMClient_HUD.componentExists("infopanel")) {
+		return;
+	}
+
+	%skillsetScroll = CMClient_HUD.gui["infopanel"].child("movableArea").child("skillsets").child("scroll");
+	%listGUI = %skillsetScroll.child("list");
+
+	%skillsetScroll.child("emptyText").setVisible(false);
+
+	%gui = new GuiSwatchCtrl("_skillset" @ %listGUI.getCount()) {
+		profile = "GuiDefaultProfile";
+		horizSizing = "right";
+		vertSizing = "bottom";
+		position = "0 0";
+		extent = "87 30";
+		minExtent = "8 2";
+		enabled = "1";
+		visible = "1";
+		clipToParent = "1";
+		color = "10 10 10 120";
+		skillsetID = %skillset;
+
+		new GuiMLTextCtrl("_name") {
+			profile = "GuiMLTextProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "3 0";
+			extent = "81 16";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = "<shadow:2:2><shadowcolor:00000066><color:EEEEEE><font:Impact:16>" @ %name;
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+
+		new GuiMLTextCtrl("_level") {
+			profile = "GuiMLTextProfile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "3 13";
+			extent = "81 15";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+			lineSpacing = "2";
+			allowColorChars = "0";
+			maxChars = "-1";
+			text = "<shadow:2:2><shadowcolor:00000066><color:E8E8E8><font:Impact:15>Lvl" SPC pad(%level, 2);
+			maxBitmapHeight = "-1";
+			selectable = "1";
+			autoResize = "1";
+		};
+
+		new GuiProgressCtrl("_xp") {
+			profile = "CMProgress2Profile";
+			horizSizing = "right";
+			vertSizing = "bottom";
+			position = "33 17";
+			extent = "52 10";
+			minExtent = "8 2";
+			enabled = "1";
+			visible = "1";
+			clipToParent = "1";
+		};
+	};
+
+	%listGUI.addListGuiObject(%gui);
+	%gui.child("xp").setValue(%xppercent / 100);
 }
 
 function CityModClientHUDInfopanel::updateAvatarPreview(%this) {

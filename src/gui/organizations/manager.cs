@@ -1350,8 +1350,8 @@ function clientcmdCM_Organizations_addJobAllTask(%taskID, %name, %description) {
 	CMOrganizationManagerGui_jobTasksTotal1.setText("<just:right><color:777777>" @ CMOrganizationManagerGui_jobTasksTotal1.totalCount);
 }
 
-function clientcmdCM_Organizations_addJobTask(%taskID, %name) {
-	if(!strLen(%taskID) || !strLen(%name)) {
+function clientcmdCM_Organizations_addJobTask(%taskID, %name, %count) {
+	if(!strLen(%taskID) || !strLen(%name) || !strLen(%count)) {
 		return;
 	}
 
@@ -1509,7 +1509,7 @@ function clientcmdCM_Organizations_addJobTask(%taskID, %name) {
 			lineSpacing = "2";
 			allowColorChars = "0";
 			maxChars = "-1";
-			text = "<just:center>1";
+			text = "<just:center>" @ %count;
 			maxBitmapHeight = "-1";
 			selectable = "1";
 			autoResize = "1";
