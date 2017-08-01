@@ -10,3 +10,4 @@ exec("./notification.cs");
 exec("./chat/init.cs");
 exec("./infopanel/init.cs");
 exec("./inventory/init.cs");
+exec("./property.cs");
